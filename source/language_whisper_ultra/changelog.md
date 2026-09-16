@@ -1,4 +1,8 @@
 
+**<span style="color:#56adda">1.0.2</span>**
+- language_whisper_ultra: Updated icon to something beautiful
+- language_whisper_ultra: Remove the 2-letter codes option
+
 **<span style="color:#56adda">1.0.1</span>**
 - Added a force_rescan option to reprocess audio tracks 
 - improved audio stream detection logic. 

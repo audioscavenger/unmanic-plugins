@@ -57,7 +57,6 @@ class Settings(PluginSettings):
         "force_rescan": False,
         "force_samples": False,
         "samples": 3,
-        "tag_style": "3",
     }
     # base: 55%
     # small: 73%
@@ -107,21 +106,6 @@ class Settings(PluginSettings):
                 "description":  "Use only odd numbers: the logic is to elect a winner when multiple languages are detected.",
             },
             "samples":        self.__set_samples(),
-            "tag_style": {
-                "label":        "Language Tag Style",
-                "description":  "Select 2 or 3 characters language tags: en or eng?",
-                "input_type":   "select",
-                "select_options": [
-                    {
-                        "value": "2",
-                        "label": "2 chars: en",
-                    },
-                    {
-                        "value": "3",
-                        "label": "3 chars: eng",
-                    },
-                ],
-            }
         }
 
     def __set_samples(self):
@@ -269,11 +253,16 @@ def tag_streams(astreams, vid_file, settings):
       
         if lang_tag:
             # apparently int are forbidden in a "select" input_type
-            tag_style = settings.get_setting('tag_style')
-            if tag_style == "2":
-                lang_tag = standardize_tag(lang_tag)
-            else:
-                lang_tag = Language.get(standardize_tag(lang_tag)).to_alpha3()
+            # tag_style = settings.get_setting('tag_style')
+            # if tag_style == "2":
+                # lang_tag = standardize_tag(lang_tag)
+            # else:
+                # lang_tag = Language.get(standardize_tag(lang_tag)).to_alpha3()
+            
+            # 3-Letter Codes Are for Media, Databases, & History (ISO 639-2 / ISO 639-3).
+            # Because 2 letters max out quickly, international library and media organizations realized they couldn't tag thousands of regional languages, historical languages, or distinct dialects.
+            # 3-Letter Codes option is removed as no movie tag ever uses it
+            lang_tag = Language.get(standardize_tag(lang_tag)).to_alpha3()
             tag_args += ["-metadata:s:a:"+str(astream), 'language='+lang_tag]
         else:
             logger.error("Language not successfully identified for audio stream '{}' of file '{}', so skipping stream".format(astream, vid_file))
