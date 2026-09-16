@@ -1,4 +1,8 @@
 
+**<span style="color:#56adda">1.0.1</span>**
+- Updated description, copyright, paths, etc
+- verified working as it is
+
 **<span style="color:#56adda">1.0.0</span>**
 - Changed name of project to stereo_transcoder_ultra
 - Published under audioscavenger/unmanic-plugins

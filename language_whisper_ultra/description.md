@@ -1,5 +1,16 @@
 
-##### Description
+---
+
+##### Links:
+
+- [Unmanic Support](https://unmanic.app/discord)
+- [Forked from](https://github.com/yajrendrag/plugin.detect_audio_language)
+- [Issues/Feature Requests](https://github.com/audioscavenger/plugin.language_whisper_ultra/issues)
+- [Pull Requests](https://github.com/audioscavenger/plugin.language_whisper_ultra/pulls)
+
+---
+
+##### Description:
 
 This plugin detects streams audio language and adds a language tag with conditions: force rescan, ignore existing, etc.
 
@@ -43,7 +54,7 @@ There is zero reason in 2026 to choose 2 characters for lang tag over 3 letters.
 
 Video files (like MKV and MP4) and media players (like Plex, Jellyfin, and VLC) strictly rely on a global broadcasting standard known as ISO 639-2 (or its modern successor, ISO 639-3).
 
-3-Letter Codes Are for Media, Databases, & History (ISO 639-2 / ISO 639-3)Because 2 letters max out quickly, international library and media organizations realized they couldn't tag thousands of regional languages, historical languages, or distinct dialects.
+3-Letter Codes Are for Media, Databases, & History (ISO 639-2 / ISO 639-3). Because 2 letters max out quickly, international library and media organizations realized they couldn't tag thousands of regional languages, historical languages, or distinct dialects.
 
 Why movies need it: A movie might feature an audio track in a rare regional dialect, an ancient language, or a distinct variation that a 2-letter code physically cannot represent. For example:
 - eng vs en (English)
