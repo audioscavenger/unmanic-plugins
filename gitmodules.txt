@@ -1,0 +1,84 @@
+[submodule "source/ignore_files_based_on_metadata/lib/ffmpeg"]
+	path = source/ignore_files_based_on_metadata/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/remove_data_streams/lib/ffmpeg"]
+	path = source/remove_data_streams/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/strip_image_streams2/lib/ffmpeg"]
+	path = source/strip_image_streams2/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/keep_stream_by_language/lib/ffmpeg"]
+	path = source/keep_stream_by_language/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/normalise_libfdk_aac/lib/ffmpeg"]
+	path = source/normalise_libfdk_aac/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/encoder_audio_libfdk_aac/lib/ffmpeg"]
+	path = source/encoder_audio_libfdk_aac/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/remove_audio_stream_by_channels/lib/ffmpeg"]
+	path = source/remove_audio_stream_by_channels/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/convert_multichan_audio_to_2ch/lib/ffmpeg"]
+	path = source/convert_multichan_audio_to_2ch/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/force_processing/lib/ffmpeg"]
+	path = source/force_processing/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/add_custom_metadata/lib/ffmpeg"]
+	path = source/add_custom_metadata/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/remove_streams_based_on_ffprobe_data/lib/ffmpeg"]
+	path = source/remove_streams_based_on_ffprobe_data/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/add_extra_ac3_multichannel_audio/lib/ffmpeg"]
+	path = source/add_extra_ac3_multichannel_audio/lib/ffmpeg
+	url = https://github.com/yajrendrag/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/reorder_audio_streams2/lib/ffmpeg"]
+	path = source/reorder_audio_streams2/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/rename_file/lib/ffmpeg"]
+	path = source/rename_file/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/add_srt_to_video/lib/ffmpeg"]
+	path = source/add_srt_to_video/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/keep_only_video_and_audio_streams/lib/ffmpeg"]
+	path = source/keep_only_video_and_audio_streams/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/set_only_audio_to_original_language/lib/ffmpeg"]
+	path = source/set_only_audio_to_original_language/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/add_extra_multichannel_audio/lib/ffmpeg"]
+	path = source/add_extra_multichannel_audio/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/convert_dts_to_eac3/lib/ffmpeg"]
+	path = source/convert_dts_to_eac3/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/convert_multichannel_audio_to_aac_or_ac3/lib/ffmpeg"]
+	path = source/convert_multichannel_audio_to_aac_or_ac3/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/asad_audio_encoder/lib/ffmpeg"]
+	path = source/asad_audio_encoder/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/stream_arranger/lib/ffmpeg"]
+	path = source/stream_arranger/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/subtitle_from_audio/lib/ffmpeg"]
+	path = source/subtitle_from_audio/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/detect_audio_language/lib/ffmpeg"]
+	path = source/detect_audio_language/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/convert_multichannel_audio_keep_one_codec/lib/ffmpeg"]
+	path = source/convert_multichannel_audio_keep_one_codec/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/reorder_by_original_language/lib/ffmpeg"]
+	path = source/reorder_by_original_language/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/split_multi_episode/lib/ffmpeg"]
+	path = source/split_multi_episode/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git
+[submodule "source/convert_audio_to_libopus/lib/ffmpeg"]
+	path = source/convert_audio_to_libopus/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg.git

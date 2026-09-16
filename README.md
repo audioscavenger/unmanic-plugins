@@ -1,4 +1,4 @@
-# Unmanic Plugins by <!-- your name here -->
+# Unmanic Plugins by AudioscavengeR
 
 ## Instructions
 
@@ -23,3 +23,29 @@ Follow the Unmanic Documentation for:
 - [License](/LICENSE)
 
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Unmanic's Plugins.
+
+
+<!-- 
+---------- create master
+git checkout -b master
+git push -u origin master
+
+---------- github: switch to master default
+---------- delete local examples
+git branch -d examples
+git push origin --delete examples
+
+git add .
+git commit -m "Initial commit of unmanic repository"
+git push origin master
+
+
+------------- repo is actually a branch
+copy source\repo.json %TMP%\
+git checkout --orphan repo
+git rm -rf .\*
+cp %TMP%\repo.json .\
+git add repo.json
+git commit -m "Initial commit of unmanic repository json"
+git push origin repo
+-->
