@@ -29,6 +29,7 @@ Thumbs.db
 *.wmv
 
 # Repo directory
+backup/
 repo/
 scripts/
 source/
