@@ -33,6 +33,7 @@ backup/
 repo/
 scripts/
 source/
+README.md
 
 # Plugin site-packages
 source/**/site-packages/**
