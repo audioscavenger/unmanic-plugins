@@ -53,13 +53,18 @@ git commit -m "Initial commit for repo root branch"
 git push -u origin repo
 
 ------------- repo->master
+git add . && git stash
 git checkout master
+git stash pop
 cp -rp backup/*.cmd ./
+
 ------------- master->repo
 E:\GPT\miniconda3\python.exe E:\Gitea\unmanic-plugins\scripts\generate_repository.py
 E:/GPT/miniconda3/python.exe E:/Gitea/unmanic-plugins/scripts/generate_repository.py
+git add . && git stash
 git checkout repo
-cp -rp backup/*.cmd ./
+git stash pop
+cp -rp repo/*.* ./
 git add .
 git commit -m "1.0.1"
 git push
