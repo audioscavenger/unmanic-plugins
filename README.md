@@ -57,6 +57,8 @@ git add . && git stash
 git checkout master
 git stash pop
 cp -rp backup/*.cmd ./
+git commit -a -m "1.0.1"
+git push
 
 ------------- master->repo
 E:\GPT\miniconda3\python.exe E:\Gitea\unmanic-plugins\scripts\generate_repository.py
@@ -66,7 +68,7 @@ git checkout repo
 git stash pop
 cp -rp repo/*.* ./
 git add .
-git commit -m "1.0.1"
+git commit -a -m "1.0.1"
 git push
 
 -->
