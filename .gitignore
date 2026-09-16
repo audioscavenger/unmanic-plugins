@@ -17,6 +17,8 @@ Thumbs.db
 *.app
 *.exe
 *.war
+*.zip
+*.7z
 
 # Large media files
 *.mp4

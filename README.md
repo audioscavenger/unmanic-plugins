@@ -3,7 +3,6 @@
 ## Instructions
 
 ### Repo URL:
-<!-- Replace the below link with your own repo URL (found in the 'repo' git branch) -->
 ```
 https://raw.githubusercontent.com/Unmanic/unmanic-plugins/repo/repo.json
 ```
@@ -35,17 +34,19 @@ git push -u origin master
 git branch -d examples
 git push origin --delete examples
 
+---------- first commit
 git add .
 git commit -m "Initial commit of unmanic repository"
 git push origin master
 
 
 ------------- repo is actually a branch
-copy source\repo.json %TMP%\
-git checkout --orphan repo
-git rm -rf .\*
-cp %TMP%\repo.json .\
-git add repo.json
-git commit -m "Initial commit of unmanic repository json"
-git push origin repo
+git checkout -b repo
+git push -u origin repo
+
+------------- repo->master
+git checkout master
+------------- master->repo
+git checkout repo
+
 -->
