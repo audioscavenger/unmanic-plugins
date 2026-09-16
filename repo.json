@@ -1,9 +1,9 @@
 {
     "repo": {
         "id": "repository.audioscavenger",
-        "name": "Sound Processors Repo",
+        "name": "AudioscavengeR Repo: Ultra Processors",
         "author": "AudioscavengeR",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "icon": "",
         "repo_data_directory": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/",
         "repo_data_url": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json"
