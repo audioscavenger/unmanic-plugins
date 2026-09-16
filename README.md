@@ -1,4 +1,4 @@
-# Unmanic Plugins by AudioscavengeR
+# AudioscavengeR Repo: Ultra Processors
 
 ## Instructions
 
@@ -22,10 +22,19 @@ Follow the Unmanic Documentation for:
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Unmanic's Plugins.
 
 ## TODO
-[ ] where does gitmodules.txt come from and should I host it
-[ ] how do i submit my repo
-[ ] submit my repo
-
+[x] where does gitmodules.txt come from and should I host it: comes from Unmanic official sources, can be ignored
+[x] how do I list my repo to Community Repositories: repository index file must be registered into Unmanic's central database tracker
+[ ] registration process: Open an Issue or Pull Request on Unmanic
+  1. Update About section: gear icon
+    1. Topics: unmanic unmanic-plugin plugin-repository
+  2. go to https://github.com/unmanic/unmanic
+  3. Open a new Issue
+  4. Provide them with your specific repository information:
+    1. Name: AudioscavengeR Repo: Ultra Processors
+    2. GitHub Page: https://github.com/audioscavenger/unmanic-plugins
+    3. Raw repo.json URL: https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json
+  
+  
 
 <!-- 
 ---------- create master
