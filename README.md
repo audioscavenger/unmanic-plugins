@@ -54,7 +54,14 @@ git push -u origin repo
 
 ------------- repo->master
 git checkout master
+cp -rp backup/*.cmd ./
 ------------- master->repo
+E:\GPT\miniconda3\python.exe E:\Gitea\unmanic-plugins\scripts\generate_repository.py
+E:/GPT/miniconda3/python.exe E:/Gitea/unmanic-plugins/scripts/generate_repository.py
 git checkout repo
+cp -rp backup/*.cmd ./
+git add .
+git commit -m "1.0.1"
+git push
 
 -->
