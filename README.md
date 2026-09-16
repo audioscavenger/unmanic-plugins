@@ -66,7 +66,7 @@ git add . && git stash
 git checkout master
 git stash pop
 cp -rp backup/*.cmd ./
-git commit -a -m "1.0.1"
+git commit -a -m "1.0.2"
 git push
 
 ------------- master->repo
