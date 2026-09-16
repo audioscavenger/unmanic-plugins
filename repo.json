@@ -3,6 +3,7 @@
         "id": "repository.audioscavenger",
         "name": "Sound Processors Repo",
         "author": "AudioscavengeR",
+        "version": "1.0.1",
         "icon": "",
         "repo_data_directory": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/",
         "repo_data_url": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json"
@@ -12,7 +13,7 @@
             "id": "language_whisper_ultra",
             "name": "Language Whisper Ultra",
             "author": "AudioscavengeR",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "tags": "audio,lang",
             "description": "Detect missing language and tag streams with 3-letter codes",
             "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/master/source/language_whisper_ultra/icon.png",
@@ -32,10 +33,10 @@
             "id": "stereo_transcoder_ultra",
             "name": "Stereo Transcoder Ultra",
             "author": "AudioscavengeR",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "tags": "audio,ffmpeg,encoder",
             "description": "Transcode mono/stereo streams in problematic codecs (DTS, MP3, FLAC, OGG, PCM, OPUS, VORBIS, WMA) to safe formats. MKV/MP4 containers only.",
-            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/master/source/stereo_transcoder_ultra/icon.png",
+            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/stereo_transcoder_ultra/icon.png",
             "compatibility": [
                 2
             ],
