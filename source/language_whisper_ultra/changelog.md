@@ -1,4 +1,19 @@
 
+**<span style="color:#56adda">1.0.1</span>**
+- Added a force_rescan option to reprocess audio tracks 
+- improved audio stream detection logic. 
+- Adjusted sample extraction timing for better language detection.
+- -map 0:a:N expects N to be the position of that stream among audio streams only
+- fixed e.stderr.decode() as Plain OSError has no .stderr attribute
+- shared_info gets wiped, not initialized
+- Sample clip duration bug: t in ffmpeg is a duration, not an end-timestamp
+- 11.5-minute (690s) cutoff: why? rather, calculation of samples to start from 2% from start until 6% from end
+- is_valid was never used, now it is
+- tag_parser.py fails if you send None as a tag, no amount of trying will fix that. fixed at ex-line 187, lang_tag is set to empty and not None
+- trimed down models to thos that are useful
+- Updated description, copyright, paths, etc
+- verified working as it is, now preparing for faster_whisper
+
 **<span style="color:#56adda">1.0.0</span>**
 - Hard-fork after the great reply from original author for an innocent pull request
 - Renamed to language_whisper_ultra

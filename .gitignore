@@ -29,6 +29,9 @@ Thumbs.db
 *.wmv
 
 # Repo directory
+**/backup
+gitsync.*
+commit.*.txt
 repo/
 scripts/
 

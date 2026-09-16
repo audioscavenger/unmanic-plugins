@@ -1,5 +1,16 @@
 
-##### Description
+---
+
+##### Links:
+
+- [Unmanic Support](https://unmanic.app/discord)
+- [Forked from](https://github.com/yajrendrag/plugin.detect_audio_language)
+- [Issues/Feature Requests](https://github.com/audioscavenger/plugin.language_whisper_ultra/issues)
+- [Pull Requests](https://github.com/audioscavenger/plugin.language_whisper_ultra/pulls)
+
+---
+
+##### Description:
 
 This plugin detects streams audio language and adds a language tag with conditions: force rescan, ignore existing, etc.
 

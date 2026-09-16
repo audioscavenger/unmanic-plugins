@@ -4,7 +4,7 @@
 
 ### Repo URL:
 ```
-https://raw.githubusercontent.com/Unmanic/unmanic-plugins/repo/repo.json
+https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json
 ```
 
 
@@ -14,14 +14,17 @@ Follow the Unmanic Documentation for:
  - [Developing Plugins for Unmanic](https://docs.unmanic.app/docs/development/developing_plugins)
 
 
-
-
 ## Links
 
 - [Unmanic Documentation](https://docs.unmanic.app/docs/)
 - [License](/LICENSE)
 
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Unmanic's Plugins.
+
+## TODO
+[ ] where does gitmodules.txt come from and should I host it
+[ ] how do i submit my repo
+[ ] submit my repo
 
 
 <!-- 
@@ -41,7 +44,12 @@ git push origin master
 
 
 ------------- repo is actually a branch
-git checkout -b repo
+git push origin --delete repo
+git checkout --orphan repo
+git rm -rf .
+cp -rp repo/*.* ./ 2>/dev/null || touch .gitkeep
+git add .
+git commit -m "Initial commit for repo root branch"
 git push -u origin repo
 
 ------------- repo->master

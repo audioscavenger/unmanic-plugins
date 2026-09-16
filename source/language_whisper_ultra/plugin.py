@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-    Written by:               yajrendrag <yajdude@gmail.com>
-    Date:                     22 September 2024, (5:45 PM)
+    Written by:               AudioscavengeR <dev@derewonko.com>
+    Date:                     16 September 2026
 
     Copyright:
-        Unmanic plugin code Copyright (C) 2024 Jay Gardner
+        Unmanic plugin code Copyright (C) 2026 Eric Derewonko
         Portions of this module rely on OpenAI's Whisper Speech Recognition which are governed by their license.
 
         This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,17 +23,6 @@
         This Unmanic plugin module uses Whisper by OpenAI (<https://github.com/openai/whisper/>) which is governed by it's own
         license.  The text of this license has accompanied this program.  If for some reason you do not have it, please refer
         to <https://github.com/openai/whisper/blob/main/LICENSE/>.
-
-* Added a force_rescan option to reprocess audio tracks 
-* improved audio stream detection logic. 
-* Adjusted sample extraction timing for better language detection.
-* -map 0:a:N expects N to be the position of that stream among audio streams only
-* fixed e.stderr.decode() as Plain OSError has no .stderr attribute
-* shared_info gets wiped, not initialized
-* Sample clip duration bug: t in ffmpeg is a duration, not an end-timestamp
-* 11.5-minute (690s) cutoff: why? rather, calculation of samples to start from 2% from start until 6% from end
-* is_valid was never used
-* tag_parser.py fails if you send None as a tag, no amount of trying will fix that. fixed at ex-line 187, lang_tag is set to empty and not None
 
 """
 import logging

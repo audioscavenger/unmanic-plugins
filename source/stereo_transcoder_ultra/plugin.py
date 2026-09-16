@@ -2,13 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-    plugins.__init__.py
-
-    Written by:               AudioscavengeR <audioscavenger@gmail.com>
-    Date:                     23 Aug 2021, (20:38 PM)
+    Written by:               AudioscavengeR <dev@derewonko.com>
+    Date:                     16 September 2026
 
     Copyright:
-        Copyright (C) 2021 Josh Sunnex
+        Unmanic plugin code Copyright (C) 2026 Eric Derewonko
 
         This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
         Public License as published by the Free Software Foundation, version 3.
@@ -19,8 +17,6 @@
 
         You should have received a copy of the GNU General Public License along with this program.
         If not, see <https://www.gnu.org/licenses/>.
-
-    examples: https://github.com/Unmanic/unmanic-plugins/blob/examples/source/custom_ffmpeg_process/plugin.py
 
 """
 import logging
