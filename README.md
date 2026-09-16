@@ -76,8 +76,8 @@ git add . && git stash
 git checkout repo
 git stash pop
 cp -rp repo/*.* ./
-git add .
-git commit -a -m "1.0.1"
+cp -rp repo/* ./
+git commit -a -m "1.0.2"
 git push
 
 -->
