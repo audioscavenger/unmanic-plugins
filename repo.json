@@ -3,7 +3,7 @@
         "id": "repository.audioscavenger",
         "name": "AudioscavengeR Repo: Ultra Processors",
         "author": "AudioscavengeR",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "icon": "",
         "repo_data_directory": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/",
         "repo_data_url": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json"
@@ -16,7 +16,7 @@
             "version": "1.0.1",
             "tags": "audio,lang,subtitle,ffmpeg",
             "description": "Specify lists of audio and subtitle languages to keep",
-            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/keep_stream_by_language/icon.png",
+            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/language_filter_ultra/icon.png",
             "compatibility": [
                 2
             ],
@@ -55,7 +55,7 @@
             "version": "1.0.3",
             "tags": "audio,ffmpeg,encoder",
             "description": "Transcode mono/stereo streams in problematic codecs (DTS, MP3, FLAC, OGG, PCM, OPUS, VORBIS, WMA) to safe formats. MKV/MP4 containers only.",
-            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/stereo_transcoder_ultra/icon.png",
+            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/stereo_transcoder_ultra/icon.webp",
             "compatibility": [
                 2
             ],
