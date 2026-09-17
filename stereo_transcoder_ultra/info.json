@@ -2,7 +2,7 @@
   "id": "stereo_transcoder_ultra",
   "name": "Stereo Transcoder Ultra",
   "author": "AudioscavengeR",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "tags": "audio,ffmpeg,encoder",
   "description": "Transcode mono/stereo streams in problematic codecs (DTS, MP3, FLAC, OGG, PCM, OPUS, VORBIS, WMA) to safe formats. MKV/MP4 containers only.",
   "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/stereo_transcoder_ultra/icon.png",
