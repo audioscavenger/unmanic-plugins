@@ -24,17 +24,8 @@ See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Unmani
 ## TODO
 [x] where does gitmodules.txt come from and should I host it: comes from Unmanic official sources, can be ignored
 [x] how do I list my repo to Community Repositories: repository index file must be registered into Unmanic's central database tracker
-[ ] registration process: Open an Issue or Pull Request on Unmanic
-  1. Update About section: gear icon
-    1. Topics: unmanic unmanic-plugin plugin-repository
-  2. go to https://github.com/unmanic/unmanic
-  3. Open a new Issue
-  4. Provide them with your specific repository information:
-    1. Name: AudioscavengeR Repo: Ultra Processors
-    2. GitHub Page: https://github.com/audioscavenger/unmanic-plugins
-    3. Raw repo.json URL: https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json
-  
-  
+[x] registration process: https://docs.unmanic.app/docs/development/plugin_repos/creating_your_own_repo/
+
 
 <!-- 
 ---------- create master
