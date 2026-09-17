@@ -4,8 +4,6 @@
 ##### Links:
 
 - [Unmanic Support](https://unmanic.app/discord)
-- [Forked from](https://github.com/Unmanic/plugin.encoder_audio_aac)
-- [Inspired by](https://github.com/k29t59dh/unmanic-plugins/tree/master/source/aac_stereo_downmix)
 - [Issues/Feature Requests](https://github.com/audioscavenger/plugin.stereo_transcoder_ultra/issues)
 - [Pull Requests](https://github.com/audioscavenger/plugin.stereo_transcoder_ultra/pulls)
 
