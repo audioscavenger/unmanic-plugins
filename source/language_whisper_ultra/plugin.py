@@ -6,7 +6,9 @@
     Date:                     16 September 2026
 
     Copyright:
-        Unmanic plugin code Copyright (C) 2026 Eric Derewonko
+        Copyright (C) 2024 yajrendrag <yajdude@gmail.com>
+        Copyright (C) 2026 AudioscavengeR <audioscavenger@gmail.com>
+
         Portions of this module rely on OpenAI's Whisper Speech Recognition which are governed by their license.
 
         This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,15 +30,16 @@
 import logging
 import hashlib
 import os
-import whisper
-# from faster_whisper import WhisperModel
 from pathlib import Path
 import subprocess
 import random
 import shutil
-import os
 import glob
-import torch
+# import torch    # torchconsumes 8GB for no reason
+# import whisper
+import ctranslate2
+from faster_whisper import WhisperModel
+from faster_whisper.audio import decode_audio
 import ffmpeg
 from langcodes import *
 from langcodes.tag_parser import LanguageTagError
@@ -49,6 +52,21 @@ from unmanic import config
 
 # Configure plugin logger
 logger = logging.getLogger("Unmanic.Plugin.language_whisper_ultra")
+
+# Force DEBUG
+logger.setLevel(logging.DEBUG)
+
+# trick to show bold characters in the UI
+normal_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+bold_chars   = "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"
+BOLD_MAP = str.maketrans(normal_chars, bold_chars)
+
+# these formats won't even be tested, they cannot embedd lang tag
+TAGLESS_FORMATS = ['avi', 'asf', 'wmv', 'mpg', 'mpeg', 'vob']
+
+def get_file_extension(filepath: str):
+    return os.path.splitext(filepath)[-1][1:].lower()
+
 
 class Settings(PluginSettings):
     settings = {
@@ -67,12 +85,12 @@ class Settings(PluginSettings):
         super(Settings, self).__init__(*args, **kwargs)
         self.form_settings = {
             "force_cpu":    {
-                "label":        "Disable GPU and run Whisper with CPU.",
-                "description":  "Helpful if GPU processing crash or don't release memory. Also bypass the GPU check when you don't have a GPU.",
+                "label":        "Disable GPU and run Whisper with {}".format('CPU'.translate(BOLD_MAP)),
+                "description":  "Helpful if GPU processing crash or don't release memory. Also bypass the GPU check when you don't have a GPU",
             },
             "model_name":    {
-                "label":        "Whisper Mode;",
-                "description":  "Larger models need more GPU memory. Base is correct 100% for mainstream Western languages and Japanese/Chinese",
+                "label":        "Model",
+                "description":  "Larger models need more GPU memory. {} is correct 100% for mainstream Western languages and Japanese/Chinese".format('tiny'.translate(BOLD_MAP)),
                 "sub_setting":  True,
                 "input_type":   "select",
                 "select_options": [
@@ -93,7 +111,7 @@ class Settings(PluginSettings):
                         "label": "medium: 81% accuracy, 1.5GB",
                     },
                     {
-                        "value": "turbo",
+                        "value": "large-v3-turbo",
                         "label": "turbo: 84% accuracy, 1.6GB FASTEST BESTEST",
                     },
                 ],
@@ -103,7 +121,7 @@ class Settings(PluginSettings):
             },
             "force_samples":    {
                 "label":        "Input your own odd number of 30s samples",
-                "description":  "Use only odd numbers: the logic is to elect a winner when multiple languages are detected.",
+                "description":  "Use only odd numbers: the logic is to elect a winner when multiple languages are detected",
             },
             "samples":        self.__set_samples(),
         }
@@ -166,14 +184,22 @@ def on_library_management_file_test(data):
     :return:
 
     """
+    # Get the path to the original file
+    abspath = data.get('path')
+
+    # fastrack to avoid processing: some formats are known to not embed lang tags
+    # worker won't fail even if file doesnopt have audio streams
+    ext = get_file_extension(abspath)
+    if ext in TAGLESS_FORMATS: 
+        logger.info("File '{}' should be added to task list. File has audio streams without language tags.".format(abspath))
+        data['add_file_to_pending_tasks'] = True
+        return data
+    
     # Configure settings object (maintain compatibility with v1 plugins)
     if data.get('library_id'):
         settings = Settings(library_id=data.get('library_id'))
     else:
         settings = Settings()
-
-    # Get the path to the file
-    abspath = data.get('path')
 
     # Get file probe
     probe = Probe(logger, allowed_mimetypes=['video'])
@@ -223,7 +249,6 @@ def tag_streams(astreams, vid_file, settings):
     # for each audio stream needing a tag, create video file with that single audio stream
     # for astream, _ in enumerate(astreams): -map 0:a:N expects N to be the position of that stream among audio streams only
     for astream in astreams:
-        sfx = os.path.splitext(os.path.basename(vid_file))[1]
         temp_sfx = '.mkv'
         output_file = tmp_dir + '/' + str(os.path.splitext(os.path.basename(vid_file))[0]) + '.' + str(astream) + temp_sfx
         command = ['ffmpeg', '-hide_banner', '-loglevel', 'info', '-i', str(vid_file), '-strict', '-2', '-max_muxing_queue_size', '9999', '-map', '0:v:0', '-map', '0:a:'+str(astream), '-map_metadata', '-1', '-c', 'copy', '-y', output_file]
@@ -281,6 +306,9 @@ def get_model(requested_model: str = 'small'):
     it automatically falls back to progressively smaller models. 
     If CUDA fails entirely, falls back to CPU using the originally requested model size.
     """
+    
+    device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
+    
     # Define models ordered from largest/most demanding to smallest
     # (Note: turbo is placed above medium as it generally requires slightly more VRAM/compute footprint than medium)
 
@@ -293,7 +321,7 @@ def get_model(requested_model: str = 'small'):
     # -> base model will likely get English, Spanish, French, German, Japanese, or Mandarin 100% of the time
     # -> for exotic languages like Estonian, Swahili, Welsh, etc, use small or turbo. medium is garbage, turbo is 6x faster
     # -> unless your life depends on it, maybe the disk space they take will take you out of it?
-    model_hierarchy = ['turbo', 'medium', 'small', 'base', 'tiny']
+    model_hierarchy = ['large-v3-turbo', 'medium', 'small', 'base', 'tiny']
     
     # Clean user input and ensure it's a valid choice
     requested_model = requested_model.lower().strip()
@@ -305,35 +333,45 @@ def get_model(requested_model: str = 'small'):
     start_idx = model_hierarchy.index(requested_model)
     candidate_models = model_hierarchy[start_idx:]
     
-    # 1. Attempt GPU Strategy (Cascading downward)
-    for current_model in candidate_models:
-        try:
-            logger.info(f"Attempting to load Whisper model '{current_model}' on CUDA...")
-            model_instance = whisper.load_model(current_model, device='cuda')
-            
-            # Successfully loaded!
-            logger.info(f"Successfully loaded '{current_model}' on CUDA.")
-            return model_instance, 'cuda'
-            
-        except torch.OutOfMemoryError:
-            logger.warning(f"VRAM OutOfMemoryError with model '{current_model}'.")
-            torch.cuda.empty_cache()  # Clear leftover fragments before trying a smaller model
-            continue  # Loop naturally moves to the next smaller model
-            
-        except RuntimeError as e:
-            # Catches driver issues, missing CUDA, or corrupted environments entirely
-            logger.error(f"RuntimeError on CUDA device: {e}. Switching strategy to CPU.")
-            break 
+    if device == "cuda":
+      # 1. Test if model fits (Cascading downward)
+      for current_model in candidate_models:
+          try:
+              logger.info(f"Attempting to load Whisper model '{current_model}' on CUDA...")
+              # model = whisper.load_model(current_model, device='cuda')
+              model = WhisperModel(current_model, device="cuda", compute_type="float16")
+              
+              # Successfully loaded!
+              logger.info(f"Successfully loaded '{current_model}' on CUDA.")
+              return current_model, 'cuda', "float16"
+              
+          # CTranslate2 doesn't expose a distinct OOM exception class through faster-whisper — CUDA OOM just surfaces as a plain RuntimeError, same as any other load failure
+          # except torch.OutOfMemoryError:
+          except RuntimeError as e:
+              logger.warning(f"VRAM OutOfMemoryError with model '{current_model}'.")
+              # torch.cuda.empty_cache()  # Clear leftover fragments before trying a smaller model
+              del model
+              continue  # Loop naturally moves to the next smaller model
+              
+          # except RuntimeError as e:
+              # # Catches driver issues, missing CUDA, or corrupted environments entirely
+              # logger.error(f"RuntimeError on CUDA device: {e}. Switching strategy to CPU.")
+              # break
+    else:
+        logger.error(f"No GPU detected: Whisper will run on CPU.")
 
-    # 2. Fallback Strategy (CPU)
-    # If we exhausted the loop or hit a driver crash, fall back to CPU using their target choice
-    logger.error(f"Insufficient GPU resources or driver error. Falling back to CPU with '{requested_model}'.")
-    try:
-        model_instance = whisper.load_model(requested_model, device='cpu')
-        return model_instance, 'cpu'
-    except Exception as e:
-        logger.critical(f"Critical failure loading Whisper on CPU: {e}")
-        raise e
+    # If we are CPU, or exhausted the loop, or hit a driver crash, fall back to CPU using user prefered model
+    # no test is performed as whisper cpu always works
+    return requested_model, 'cpu', "int8"
+    
+    # try:
+        # # model = whisper.load_model(requested_model, device='cpu')
+        # model = WhisperModel(current_model, device="cpu", compute_type="int8")
+        # return current_model, 'cpu', "int8"
+        
+    # except Exception as e:
+        # logger.critical(f"Critical failure loading Whisper on CPU: {e}")
+        # raise e
 
 
 def detect_language(video_file, tmp_dir, settings):
@@ -345,11 +383,13 @@ def detect_language(video_file, tmp_dir, settings):
     # Load Whisper model
     if force_cpu:
         device = 'cpu'
+        compute_type="int8"
     else:
-        model_name, device = get_model(model_name)
+        model_name, device, compute_type = get_model(model_name)
     
     # model was test-loaded in get_model()
-    model = whisper.load_model(model_name, device)
+    # model = whisper.load_model(model_name, device)
+    model = WhisperModel(model_name, device=device, compute_type=compute_type)
     logger.debug("video_file: '{}'; tmp_dir: '{}'".format(video_file, tmp_dir))
 
     # Load video and get duration
@@ -382,14 +422,18 @@ def detect_language(video_file, tmp_dir, settings):
         audio_file = f"{tmp_dir}/sample_{str(sample_time)}.wav"
         ffmpeg.input(video_file, ss=sample_time, t=30).output(audio_file, vn=None, acodec='pcm_s16le').run()
         logger.debug("audio_file: '{}'".format(audio_file))
-        audio = whisper.load_audio(audio_file)
-        audio = whisper.pad_or_trim(audio)
+        # audio = whisper.load_audio(audio_file)
+        # audio = whisper.pad_or_trim(audio)
+        audio = decode_audio(audio_file, sampling_rate=16000)
 
         # Run Whisper to detect language from the audio sample
-        n_mels = model.dims.n_mels
-        mel = whisper.log_mel_spectrogram(audio, n_mels=n_mels).to(model.device)
-        _, probs = model.detect_language(mel)
-        lang = max(probs, key=probs.get)
+        # n_mels = model.dims.n_mels
+        # mel = whisper.log_mel_spectrogram(audio, n_mels=n_mels).to(model.device)
+        # _, probs = model.detect_language(mel)
+        # lang = max(probs, key=probs.get)
+        
+        lang, language_probability, all_language_probs = model.detect_language(audio)
+        
         detected_languages.append(lang)
         logger.debug(f"lang {lang} detected in sample {sample_time}")
 
@@ -399,11 +443,11 @@ def detect_language(video_file, tmp_dir, settings):
     # empty cuda cache
     if not force_cpu:
         try:
-            model.cpu()
+            # model.cpu()
             del model
         except:
             pass
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
     # elect a language majority, return the first if samples = 1
     if len(set(detected_languages)) == 1:

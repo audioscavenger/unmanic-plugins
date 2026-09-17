@@ -1,29 +1,39 @@
 
 ---
 
-##### Links:
+#### Links:
 
 - [Unmanic Support](https://unmanic.app/discord)
-- [Forked from](https://github.com/yajrendrag/plugin.detect_audio_language)
 - [Issues/Feature Requests](https://github.com/audioscavenger/plugin.language_whisper_ultra/issues)
 - [Pull Requests](https://github.com/audioscavenger/plugin.language_whisper_ultra/pulls)
 
 ---
 
-##### Description:
+#### Description:
 
-This plugin detects streams audio language and adds a language tag with conditions: force rescan, ignore existing, etc.
+This plugin detects streams audio language and adds language tags with conditions: force rescan, ignore existing, etc. Original container or target container **MUST** be MKV/MP4/MOV.
 
 Elect and labels the stream with the most frequently observed language among 1 to 6 30-seconds audio samples.
 
-Uses OpenAI's Whisper Speech Recognition, will switch to Whisper-faster very soon.
+Uses **faster-whisper** Speech Recognition: eats up only 500MB (excluding models) versus 10GB for OpenAI's Whisper.
 
-https://github.com/openai/whisper
-https://openai.com/index/whisper/
+https://github.com/SYSTRAN/faster-whisper
 
-##### Configuration
+---
 
-#### <span style="color:blue">force_cpu</span>
+#### Configuration
+
+##### Plugin Order Matters
+
+This plugin will detect languages and update the file but that won't do anything for AVI files.
+
+1. Remuxer or Video Transcoder (if source file is not MKV/MP4/MOV)
+2. **This plugin**
+3. Keep stream by language or Remove stream by Language if any (don't trim languages before detection)
+4. Audio Transcoder if any (don't transcode languages you don't want)
+
+
+##### <span style="color:blue">force_cpu</span>
 The plugin defaults to using GPU, but if this option is checked it will bypass the GPU test and use the CPU for detection. CPU fallback is done after a load test of the model chosen and re-test all the smaller models it, in that order:
 
 - turbo: 84% accuracy, 1.6GB FASTEST BESTEST",

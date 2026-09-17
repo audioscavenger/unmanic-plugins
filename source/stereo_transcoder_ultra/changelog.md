@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.2</span>**
+- Updated copyright
+
 **<span style="color:#56adda">1.0.1</span>**
 - Updated description, copyright, paths, etc
 - verified working as it is

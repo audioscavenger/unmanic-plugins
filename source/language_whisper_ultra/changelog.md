@@ -1,7 +1,13 @@
 
+**<span style="color:#56adda">1.0.3</span>**
+- Implemented faster_whisper througout the plugin
+- Added a simple ctranslate2 test instead of loading a model to test cuda
+- spent an hour testing various ways to get Intel GPU i915 to work with whister: it's a lost cause
+- fastrack to avoid processing: some formats are known to not embed lang tags
+
 **<span style="color:#56adda">1.0.2</span>**
-- language_whisper_ultra: Updated icon to something beautiful
-- language_whisper_ultra: Remove the 2-letter codes option
+- Updated icon to something beautiful
+- Remove the 2-letter codes option
 
 **<span style="color:#56adda">1.0.1</span>**
 - Added a force_rescan option to reprocess audio tracks 
