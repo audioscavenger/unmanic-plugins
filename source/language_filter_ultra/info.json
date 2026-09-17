@@ -2,7 +2,7 @@
   "id": "language_filter_ultra",
   "name": "Language Filter Ultra",
   "author": "AudioscavengeR",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "tags": "audio,lang,subtitle,ffmpeg",
   "description": "Specify lists of audio and subtitle languages to keep",
   "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/keep_stream_by_language/icon.png",

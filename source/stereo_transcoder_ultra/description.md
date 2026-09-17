@@ -8,11 +8,9 @@
 - [Discussions/Requests](https://github.com/audioscavenger/unmanic-plugins/discussions)
 - [Pull Requests](https://github.com/audioscavenger/unmanic-plugins/pulls)
 
-Don't contact me with issues, I don't care. Most plugin maintainers code their own to fit their specific needs. If my plugins help you, great.
+Don't contact me with issues. Most plugin maintainers code their own to fit their specific needs. If my plugins help you, great.
 
-If you find a blatant bug or have a specific scenario, simply fix it yourself and submit a pull request like I do.
-
-I will not ignore or deny pull requests, unlike most of the plugin maintainers I know. Yes I'm rude, you're welcome :)
+If you find a blatant bug or have a specific scenario, simply fix it yourself and submit a pull request.
 
 ---
 

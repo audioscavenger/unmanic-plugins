@@ -58,7 +58,7 @@ git checkout master
 git stash pop
 cp -rp backup/*.cmd ./
 git add .
-git commit -a -m "1.0.2"
+git commit -a -m "1.0.3"
 git push
 
 ------------- master->repo
@@ -70,7 +70,7 @@ git stash pop
 cp -rp repo/*.* ./
 cp -rp repo/* ./
 git add .
-git commit -a -m "1.0.2"
+git commit -a -m "1.0.3"
 git push
 
 -->
