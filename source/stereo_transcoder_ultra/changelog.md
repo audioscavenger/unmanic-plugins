@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.3</span>**
+- Updated icon
+
 **<span style="color:#56adda">1.0.2</span>**
 - Updated copyright
 

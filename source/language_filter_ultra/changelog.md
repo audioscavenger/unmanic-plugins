@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.1</span>**
+- Updated icon
+
 **<span style="color:#56adda">1.0.0</span>**
 - Fixed 6 bugs and won't submit reports or pull requests: yajrendrag refuses to fix his code, and his code is AI slop anyways
 - Flipped the uncheck keep commentaries to Discard commentaries

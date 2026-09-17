@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.4</span>**
+- Updated icon
+
 **<span style="color:#56adda">1.0.3</span>**
 - Implemented faster_whisper througout the plugin
 - Added a simple ctranslate2 test instead of loading a model to test cuda
