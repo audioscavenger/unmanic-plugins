@@ -4,8 +4,9 @@
 ##### Links:
 
 - [Unmanic Support](https://unmanic.app/discord)
-- [Issues/Feature Requests](https://github.com/audioscavenger/plugin.stereo_transcoder_ultra/issues)
-- [Pull Requests](https://github.com/audioscavenger/plugin.stereo_transcoder_ultra/pulls)
+- [Issues](https://github.com/audioscavenger/unmanic-plugins/issues)
+- [Discussions/Requests](https://github.com/audioscavenger/unmanic-plugins/discussions)
+- [Pull Requests](https://github.com/audioscavenger/unmanic-plugins/pulls)
 
 ---
 
