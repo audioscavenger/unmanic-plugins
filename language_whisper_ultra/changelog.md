@@ -1,6 +1,7 @@
 
 **<span style="color:#56adda">1.0.4</span>**
 - Updated icon
+- ffmpeg now points to Unmanic official https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg
 
 **<span style="color:#56adda">1.0.3</span>**
 - Implemented faster_whisper througout the plugin
