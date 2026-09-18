@@ -28,11 +28,11 @@ See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Unmani
 
 
 <!-- 
----------- create master
-git checkout -b master
-git push -u origin master
+---------- create main
+git checkout -b main
+git push -u origin main
 
----------- github: switch to master default
+---------- github: switch to main default
 ---------- delete local examples
 git branch -d examples
 git push origin --delete examples
@@ -40,7 +40,7 @@ git push origin --delete examples
 ---------- first commit
 git add .
 git commit -m "Initial commit of unmanic repository"
-git push origin master
+git push origin main
 
 
 ------------- repo is actually a branch
@@ -52,16 +52,23 @@ git add .
 git commit -m "Initial commit for repo root branch"
 git push -u origin repo
 
-------------- repo->master
+------------- lib reference
+cd lib
+git rm -r ffmpeg
+git submodule add https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg ./ffmpeg
+
+for folder in source/*; do cd $folder/lib/ffmpeg; git pull; cd -; done
+
+------------- repo->main
 git add . && git stash
-git checkout master
+git checkout main
 git stash pop
 cp -rp backup/*.cmd ./
 git add .
 git commit -a -m "1.0.3"
 git push
 
-------------- master->repo
+------------- main->repo
 E:\GPT\miniconda3\python.exe E:\Gitea\unmanic-plugins\scripts\generate_repository.py
 E:/GPT/miniconda3/python.exe E:/Gitea/unmanic-plugins/scripts/generate_repository.py
 git add . && git stash

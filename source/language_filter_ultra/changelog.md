@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.2</span>**
+- ffmpeg now points to Unmanic official https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg
+
 **<span style="color:#56adda">1.0.1</span>**
 - Updated icon
 
