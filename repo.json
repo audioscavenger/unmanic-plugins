@@ -3,7 +3,7 @@
         "id": "repository.audioscavenger",
         "name": "AudioscavengeR Repo: Ultra Processors",
         "author": "AudioscavengeR",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "icon": "",
         "repo_data_directory": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/",
         "repo_data_url": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json"
@@ -32,7 +32,7 @@
             "id": "language_whisper_ultra",
             "name": "Language Whisper Ultra",
             "author": "AudioscavengeR",
-            "version": "1.0.4",
+            "version": "1.0.5",
             "tags": "audio,lang",
             "description": "Detect missing language and tag streams with 3-letter codes",
             "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/language_whisper_ultra/icon.png",
