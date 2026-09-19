@@ -28,13 +28,13 @@ Thumbs.db
 *.mov
 *.wmv
 
-# Repo directory
+# custom
 **/backup
-gitsync.*
 commit.*.txt
-repo/
-scripts/
 
 # Plugin site-packages
+/*_ultra/
+repo/
+repo.json*
 source/**/site-packages/**
 **/__pycache__/**
