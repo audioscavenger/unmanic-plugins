@@ -167,6 +167,6 @@ jobs:
     # Execute plugin repo gen action
     - name: Generate and Deploy Unmanic Plugin Repository
       uses: Unmanic/action.generate-unmanic-plugin-repo@master
-        with:
-          deploy_repo: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/official') && github.event_name != 'pull_request' && 'true' || 'false' }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        deploy_repo: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/official') && github.event_name != 'pull_request' && 'true' || 'false' }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
