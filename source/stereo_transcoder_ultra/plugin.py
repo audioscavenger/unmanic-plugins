@@ -286,7 +286,7 @@ class Settings(PluginSettings):
         "default_stream_language": "eng",
         "default_stream_title":    "English",
         "advanced":               False,
-        "max_muxing_queue_size":  2048,
+        "max_muxing_queue_size":  4096,
         "main_options":           "",
         "advanced_options":       "",
         "custom_options_note":    "",

@@ -21,6 +21,47 @@ Follow the Unmanic Documentation for:
 
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Unmanic's Plugins.
 
+## PLUGINS HOW TO
+
+1. Make sure you add a link to ffmpeg tools in a `lib` folder:
+```bash
+mkdir lib
+cd lib
+git rm -r ffmpeg
+git submodule add https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg ./ffmpeg
+```
+
+2. `ffmpeg/stream_mapper.py` does build the ffmpeg options in that order:
+  1. generic_options: before input
+  `-hide_banner -loglevel info -fflags +genpts`
+  
+  2. main_options: no idea what that is
+  
+  3. advanced_options: default cache and experimental code banned (strict 2 = strict, goes all to way to -2 = anything possible)
+  `-strict 2 -max_muxing_queue_size 4096`
+
+### -strict 2
+
+In FFmpeg, the flag -strict 2 (which can also be written as -strict experimental) allows FFmpeg to use experimental encoders and decoders that are not yet considered fully stable or safe by the FFmpeg development team.
+FFmpeg enforces a strict compliance scale. By default, it will block you from using experimental codecs to prevent accidental audio/video corruption or unexpected crashes. Setting -strict 2 lowers that safety guardrail.
+
+The -strict flag accepts numeric values or text aliases. Here is how they rank from safest to most experimental:
+
+| Value | Alias | What it does |
+|---|---|---|
+| 2 | very | Strictly conforms to all older, ultra-stable standards. |
+| 1 | strict | Strictly conforms to standard specifications. |
+| 0 | normal | Default. Allows normal, stable operations. |
+| -1 | unofficial | Allows unofficial experimental extensions. |
+| -2 | experimental | Allows experimental code (same as passing -strict 2 or -strict -2). |
+
+### -max_muxing_queue_size 4096
+
+The flag -max_muxing_queue_size 4096 allocates more memory to buffer audio and video data right before it is written into the final video file.
+
+By default, FFmpeg uses a small queue size (often 128 packets). Increasing it to 4096 gives FFmpeg a massive safety cushion to prevent a common crash known as the "Too many packets buffered for output stream" error.
+
+
 ## TODO
 [x] where does gitmodules.txt come from and should I host it: comes from Unmanic official sources, can be ignored
 [x] how do I list my repo to Community Repositories: repository index file must be registered into Unmanic's central database tracker

@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.5</span>**
+- init.d deps installer is now bug-free and multi-platform, and includes venv init when needed
+
 **<span style="color:#56adda">1.0.4</span>**
 - Updated icon
 - ffmpeg now points to Unmanic official https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg

@@ -1,17 +1,36 @@
 #!/bin/bash
-
 # Script is executed by the Unmanic container on startup to auto-install dependencies
 
-TARGET_DIR="/opt/venv"
-if [ -f "$TARGET_DIR/pyvenv.cfg" -a -f "$TARGET_DIR/bin/python3" ]; then
-  # Venv case (Ubuntu 24 style or manual venv)
-  python_command="$TARGET_DIR/bin/python3"
-else
-  # System case (Ubuntu 22 style)
-  python_command="/usr/bin/python3"
+# Ensure errors don't silently cascade
+set -e
+
+echo "**** language_whisper_ultra: Starting dependency check... ****"
+
+# 0. FORCE VENV ACTIVATION IF IT EXISTS (Handles manual testing perfectly)
+if [ -f "/opt/venv/bin/activate" ]; then
+  echo "**** language_whisper_ultra: Activating venv virtual environment... ****"
+  source /opt/venv/bin/activate
 fi
 
-# if ! command -v whisper &> /dev/null; then
+# 1. DYNAMICALLY DETECT THE CORRECT PYTHON INTERPRETER
+# We query 'which python3' first because Unmanic sets up its runtime environment variables (PATH) 
+# pointing directly to its active environment (whether system or venv) when executing scripts.
+if command -v python3 &> /dev/null; then
+  python_command=$(command -v python3)
+elif [ -f "/opt/venv/bin/python3" ]; then
+  python_command="/opt/venv/bin/python3"
+else
+  python_command="/usr/bin/python3"
+fi
+echo "**** language_whisper_ultra: Using Python at ${python_command} ****"
+
+# 2. ACCURATE DEPENDENCY CHECK & INSTALLATION
+# Avoid breaking system packages if it falls back to a global system context
+PIP_FLAGS=""
+if [[ "$python_command" == "/usr/bin/python3" ]]; then
+  PIP_FLAGS="--break-system-packages"
+fi
+
 if ! ${python_command} -m pip show faster-whisper &> /dev/null; then
   echo "**** language_whisper_ultra: Installing whisper... ****"
 
@@ -22,14 +41,15 @@ if ! ${python_command} -m pip show faster-whisper &> /dev/null; then
   # if $cpu_intel && $gpu_intel; then
   # else
     # # nvidia:
-    ${python_command} -m pip install -U faster-whisper
+    ${python_command} -m pip install $PIP_FLAGS -U faster-whisper
   # fi
 else
   echo "**** language_whisper_ultra: whisper already installed ****"
 fi
 
-# some cleanup
-pip cache purge
+# 3. SAFE CLEANUP
+echo "**** language_whisper_ultra: Running package cache cleanup... ****"
+${python_command} -m pip cache purge
 
 # more cleanup
 # python3 -m pip uninstall -y torch torchvision diffusers optimum optimum-intel openvino faster-whisper openai-whisper nvidia-cublas-cu12 nvidia-cuda-cupti-cu12 nvidia-cuda-nvrtc-cu12 nvidia-cuda-runtime-cu12 nvidia-cudnn-cu12 nvidia-cufft-cu12 nvidia-curand-cu12 nvidia-cusolver-cu12 nvidia-cusparse-cu12 nvidia-nccl-cu12 nvidia-nvtx-cu12 triton openvino-telemetry mpmath zipp urllib3 typing-extensions tqdm threadpoolctl tabulate sympy shellingham setuptools safetensors regex pyyaml pyparsing pygments psutil Pillow packaging numpy ninja networkx narwhals mdurl MarkupSafe idna hf-xet h11 fsspec filelock cloudpickle click charset_normalizer certifi annotated-doc scipy requests pydot markdown-it-py joblib jinja2 importlib_metadata httpcore anyio torch scikit-learn rich openvino-tokenizers httpx typer nncf huggingface-hub tokenizers diffusers transformers optimum optimum-intel
