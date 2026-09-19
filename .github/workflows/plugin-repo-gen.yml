@@ -28,6 +28,26 @@ jobs:
       # | |___| | | \__ \ |_| | | |  __/ |  __/| | |  __/\__ \  __/ | | | |_
       # |_____|_| |_|___/\__,_|_|  \___| |_|   |_|  \___||___/\___|_| |_|\__|
       #
+      - name: Check all plugins exist in source directory
+        if: success() || failure()
+        run: |
+          success=0
+          for root_dir in ./*; do
+              if [ -d "${root_dir:?}" ]; then
+                  # Ignore docs directory
+                  [ "$(basename ${root_dir:?})" == "docs" ] && continue
+                  # The only other directory should be "source"
+                  if [ "$(basename ${root_dir:?})" != "source" ]; then
+                      echo "FAIL - Found an unexpected directory in '${root_dir:?}'. All plugins should be added to './source/'."
+                      success=1
+                  fi
+              fi
+          done
+          if [ ${success} -gt 0 ]; then
+              exit 1
+          else
+              echo "PASS - Found a correct directory structure in the project root."
+          fi
       - name: Check .gitignore in all plugin folders
         if: success() || failure()
         run: |
@@ -126,7 +146,7 @@ jobs:
               exit 1
           fi
 
-        # Store success message in success file artifact
+      # Store success message in success file artifact
       - name: Set success file on completion of tests
         if: success()
         run: echo 'true' > success_file.txt
@@ -145,28 +165,40 @@ jobs:
     permissions:
       contents: write
     steps:
-    # Fetch and read success file
-    - name: Download success file from previous job
-      uses: actions/download-artifact@v4
-      with:
-        path: ./artifacts/
-    - name: Read success file
-      id: previous_jobs_success
-      run: |
-        IS_SUCCESS=$(cat ./artifacts/success_file/success_file.txt)
-        echo "IS_SUCCESS=${IS_SUCCESS:?}" >> $GITHUB_OUTPUT
-        rm -rfv ./artifacts
+      # Fetch and read success file
+      - name: Download success file from previous job
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts/
+      - name: Read success file
+        id: previous_jobs_success
+        run: |
+          IS_SUCCESS=$(cat ./artifacts/success_file/success_file.txt)
+          echo "IS_SUCCESS=${IS_SUCCESS:?}" >> $GITHUB_OUTPUT
+          rm -rfv ./artifacts
 
-    # Checkout
-    - name: Checkout
-      if: steps.previous_jobs_success.outputs.IS_SUCCESS == 'true'
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      # Checkout
+      - name: Checkout
+        if: steps.previous_jobs_success.outputs.IS_SUCCESS == 'true'
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    # Execute plugin repo gen action
-    - name: Generate and Deploy Unmanic Plugin Repository
-      uses: Unmanic/action.generate-unmanic-plugin-repo@master
-      with:
-        deploy_repo: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/official') && github.event_name != 'pull_request' && 'true' || 'false' }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install build dependencies
+        if: steps.previous_jobs_success.outputs.IS_SUCCESS == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            libjpeg-dev \
+            zlib1g-dev \
+            libpng-dev \
+            libwebp-dev \
+            libtiff-dev
+
+      # Execute plugin repo gen action
+      - name: Generate and Deploy Unmanic Plugin Repository
+        uses: Unmanic/action.generate-unmanic-plugin-repo@master
+        with:
+          deploy_repo: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/official') && github.event_name != 'pull_request' && 'true' || 'false' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
