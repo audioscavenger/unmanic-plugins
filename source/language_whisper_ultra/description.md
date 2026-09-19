@@ -20,6 +20,12 @@ This plugin detects streams audio language and adds language tags with condition
 
 Elect and labels the stream with the most frequently observed language among 1 to 6 30-seconds audio samples.
 
+Absolut minimun duration of audio detection is 30 seconds. Plugin will ignore anything shorter than 30 seconds.
+
+:::important
+You **must** restart Unmanic/reboot the container to get Whisper dependencies installed.
+:::
+
 Uses **faster-whisper** Speech Recognition: eats up only 500MB (excluding models) versus 10GB for OpenAI's Whisper.
 
 https://github.com/SYSTRAN/faster-whisper
@@ -46,26 +52,26 @@ The plugin defaults to using GPU, but if this option is checked it will bypass t
 - base: 55% accuracy, 142 MB",
 - tiny: 50% accuracy, 75 MB",
 
-'medium' is purposefully excluded as it's garbage compared to large-v3-turbo which is 6x faster and same size anyways.
+'medium' is purposefully excluded as it's garbage compared to large-v3-turbo which is 6x faster, same size and same accuracy.
 
 The plugin is checking 6 randomly selected, 30 second audio samples, so this
 doesn't place a huge burden on the CPU and still executes very fast.  it should be selected if you do not have an nvidia GPU or if your GPU is low on memory.  There are known issues with Whisper not releasing
 GPU memory until the calling process (unmanic) terminates.  this will avoid this issue.
 
 #### <span style="color:blue">model_name</span>
-'small' model is the default and gives 100% accuracy for 99.99% of use cases. Only use a larger model when you have exotic languages to identify.
+'tiny' model is the default and gives 100% accuracy for 99.99% of Western movies. Only use a larger model when you have exotic languages to identify. I use `tiny` for my collection of FR/EN movies in conjusction with _Radarr_  and accuracy has been 100% for 376 movies.
 
 #### <span style="color:blue">force_rescan</span>
 Force reprocess all audio tracks
 
 #### <span style="color:blue">force_samples</span>
-Enable you to choose how many 30-seconds samples to randomely pull from the audio.
+Enable you to choose how many 30-seconds samples to randomely pull from the audio. 3 is sufficient for 99.99% of scenarios.
 
 #### <span style="color:blue">samples</span>
 Use only odd numbers: the logic is to elect a winner when multiple languages are detected.
 
 #### <span style="color:blue">tag_style</span>
-There is zero reason in 2026 to choose 2 characters for lang tag over 3 letters. This option will be removed in future releases.
+There is zero reason in 2026 to choose 2 characters for lang tag over 3. This option will be removed in future releases.
 
 Video files (like MKV and MP4) and media players (like Plex, Jellyfin, and VLC) strictly rely on a global broadcasting standard known as ISO 639-2 (or its modern successor, ISO 639-3).
 
@@ -79,13 +85,12 @@ Why movies need it: A movie might feature an audio track in a rare regional dial
 
 
 :::important
-This plugin is installed using the init.d system script, and whisper is pip installed as part of the the plugin installation.
+This plugin is installed using the init.d system script, and whisper is installed by pip/venv as part of the the plugin installation **at boot time only**.
 
-This means that at the time the plugin is installed, whisper is not necessarily operational, so Unmanic should be restarted after this plugin is installed.
+This means that at the time the plugin is installed, you **must** restart Unmanic (or reboot the container) to use this plugin.
 
 Also you may need to force install dependencies yourself and purge the cache:
 1. `~/.unmanic/plugins/language_whisper_ultra/init.d/install_deps.sh`
 2. `pip cache purge`
 3. restart Unmanic
-
 :::

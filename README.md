@@ -100,21 +100,24 @@ git submodule add https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg ./ffmpe
 
 for folder in source/*; do cd $folder/lib/ffmpeg; git pull; cd -; done
 
-------------- repo->main
+------------- main
 git checkout main
+git fetch
 cp -rp backup/*.cmd ./
 git add .
 git commit -a -m "1.0.4"
 git push
 
-------------- main->repo
+------------- repo
 E:\GPT\miniconda3\python.exe E:\Gitea\unmanic-plugins\scripts\generate_repository.py
 E:/GPT/miniconda3/python.exe E:/Gitea/unmanic-plugins/scripts/generate_repository.py
 git checkout repo
+git fetch
 cp -rp repo/*.* ./
 cp -rp repo/* ./
 git add .
 git commit -a -m "1.0.4"
 git push
+git checkout main
 
 -->

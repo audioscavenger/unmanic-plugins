@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.6</span>**
+- Updated description to stress the need to restart Unmanic after install
+
 **<span style="color:#56adda">1.0.5</span>**
 - init.d deps installer is now bug-free and multi-platform, and includes venv init when needed
 
