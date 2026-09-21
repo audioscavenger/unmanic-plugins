@@ -16,7 +16,7 @@ If you find a blatant bug or have a specific scenario, simply fix it yourself an
 
 ##### Description:
 
-This Plugin is intended for transcoding of old AVI files with problematic **mono and stereo** audio streams.
+This Plugin transcodes **any** audio stream using **any** codec, can downmix, or keep, or cap multichannels to 5.1 max.
 
 This Plugin requires a target MKV/MP4/M4V container.
 
@@ -38,7 +38,7 @@ Within that mono/stereo scope, it only converts the codecs you enable below (or 
 - AAC
 - AC3/EAC3
 
-  Streams already encoded as **AAC, OPUS, AC3, or EAC3** should be skipped by default, since these are considered safe delivery codecs (transcoding can be forced).
+Streams already encoded as **AAC, OPUS, AC3, or EAC3** should be skipped by default, since these are considered safe delivery codecs (transcoding can be forced).
 
 Target codecs you can choose from:
 - AAC (LC)
@@ -73,7 +73,9 @@ The important one for downmixing is Surround = -6 dB. The center channel gets a 
 
 These are real FFmpeg/libswresample downmix parameters rather than arbitrary volume filters. FFmpeg exposes center_mix_level, surround_mix_level, and lfe_mix_level specifically for this purpose.
 
-The formula for 5.1 is `pan=stereo|c0=c2+0.30*c0+0.30*c4|c1=c2+0.30*c1+0.30*c5` and for 7.1: ``.
+* The downmix formula for 5.1 > stereo is `pan=stereo|c0=c2+0.30*c0+0.30*c4|c1=c2+0.30*c1+0.30*c5`
+* The downmix formula for 7.1 > stereo is `pan=stereo|c0=c2+0.30*c0+0.30*c4+0.30*c6|c1=c2+0.30*c1+0.30*c5+0.30*c7`
+* The downmix formula for 7.1 > 5.1 is `pan=5.1|FL=FL|FR=FR|FC=FC|LFE=LFE|BL={:.2f}*BL+{:.2f}*SL|BR={:.2f}*BR+{:.2f}*SR` with default blend_ratio = 50%
 
 ---
 
@@ -95,8 +97,7 @@ When transcoding audio and/or video streams, ffmpeg will not begin writing into 
 While waiting for that to happen, packets for other streams are buffered. 
 This option sets the size of this buffer, in packets, for the matching output stream.
 
-FFmpeg docs refer to this value as '-max_muxing_queue_size'
-
+FFmpeg docs refer to this value as '-max_muxing_queue_size' and 4096 is commonly used value to avoid any problem.
 
 #### <span style="color:blue">Write your own FFmpeg params</span>
 This free text input allows you to write any FFmpeg params that you want. 

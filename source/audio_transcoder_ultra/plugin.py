@@ -28,10 +28,10 @@ import os
 
 from unmanic.libs.unplugins.settings import PluginSettings
 
-from stereo_transcoder_ultra.lib.ffmpeg import StreamMapper, Probe, Parser
+from audio_transcoder_ultra.lib.ffmpeg import StreamMapper, Probe, Parser
 
 # Configure plugin logger
-logger = logging.getLogger("Unmanic.Plugin.stereo_transcoder_ultra")
+logger = logging.getLogger("Unmanic.Plugin.audio_transcoder_ultra")
 
 # trick to show bold characters in the UI
 normal_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -1329,7 +1329,7 @@ def on_library_management_file_test(data, task_data_store=None, file_metadata=No
         ]
         if incompatible_codecs:
             message = (
-                "stereo_transcoder_ultra: source container '{}' does not support {} audio. "
+                "audio_transcoder_ultra: source container '{}' does not support {} audio. "
                 "A container remux (MKV or MP4) needs to run BEFORE this plugin in the "
                 "processing flow, or this task will FAIL (unless you select to not fail) "
                 "in settings.".format(
@@ -1400,7 +1400,7 @@ def on_worker_process(data):
         ]
         if incompatible_codecs:
             message = (
-                "stereo_transcoder_ultra: cannot mux {} audio into a '{}' container ('{}'). "
+                "audio_transcoder_ultra: cannot mux {} audio into a '{}' container ('{}'). "
                 "A container remux (e.g. to MKV or MP4) must run before this plugin in the "
                 "processing flow.".format(
                     '/'.join(c.upper() for c in incompatible_codecs), out_container_ext or '(none)', file_out)

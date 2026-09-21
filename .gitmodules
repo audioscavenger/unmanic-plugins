@@ -13,3 +13,6 @@
 [submodule "source/codec_type_filter_ultra/lib/ffmpeg"]
 	path = source/codec_type_filter_ultra/lib/ffmpeg
 	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg
+[submodule "source/audio_transcoder_ultra/lib/ffmpeg"]
+	path = source/audio_transcoder_ultra/lib/ffmpeg
+	url = https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg

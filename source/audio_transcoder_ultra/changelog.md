@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.1.2</span>**
+- Changed name of project to audio_transcoder_ultra since it does everything
+
 **<span style="color:#56adda">1.1.1</span>**
 - Added normalization option
 - Unofficially replaces _Audio Encoder AAC_ and _Transcode Audio_ plugins entirely
