@@ -1,4 +1,9 @@
 
+**<span style="color:#56adda">1.1.0</span>**
+- Downmix to stereo/mono or keep multichannels down to 5.1 max
+- Will not allow multichannels incompatible codecs
+- Unofficially replaces _Audio Encoder AAC_ and _Transcode Audio_ plugins entirely
+
 **<span style="color:#56adda">1.0.4</span>**
 - ffmpeg now points to Unmanic official https://github.com/Josh5/unmanic.plugin.helpers.ffmpeg
 

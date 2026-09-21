@@ -98,11 +98,13 @@ RATECONTROL_OPTIONS_BY_CODEC = {
 # Which source channel counts should be processed.  The default keeps the
 # plugin's original behaviour: mono and stereo only.
 CHANNEL_TARGET_OPTIONS = [
-    {'value': 'mono',   'label': '🔈 1.0 - Mono only'},
-    {'value': 'stereo', 'label': '🎧 2.0 - Stereo only'},
-    {'value': 'le2',    'label': '🔈🎧 - Mono and stereo'},
-    {'value': 'gt2',    'label': '📽️ 5.1/7.1 - Surround only (downmix to 2.0)'},
-    {'value': 'all',    'label': '🌌 Anything - (downmix to 2.0)'},
+    {'value': 'mono',       'label': '🔈 1.0 - Mono only'},
+    {'value': 'stereo',     'label': '🎧 2.0 - Stereo only'},
+    {'value': 'le2',        'label': '🔈🎧 - Mono and stereo'},
+    {'value': 'gt2',        'label': '📽️ 5.1/7.1 → 2.0 - Surround only (downmix to stereo)'},
+    {'value': 'all',        'label': '🌌 Anything → 2.0 (downmix to stereo)'},
+    {'value': 'surround51', 'label': '🎬 5.1/7.1 → 5.1 - Surround only (7.1 downmixed to 5.1)'},
+    {'value': 'max51',      'label': '📀 Anything → 5.1 max (mono/stereo/5.1 kept as-is, 7.1 downmixed to 5.1)'},
 ]
 
 # These are libswresample downmix controls, expressed in dB.  Keeping the
@@ -134,6 +136,21 @@ DOWNMIX_FORMULA_OPTIONS = [
 DEFAULT_51_PAN_FORMULA = 'pan=stereo|c0=c2+0.30*c0+0.30*c4|c1=c2+0.30*c1+0.30*c5'
 DEFAULT_71_PAN_FORMULA = 'pan=stereo|c0=c2+0.30*c0+0.30*c4+0.30*c6|c1=c2+0.30*c1+0.30*c5+0.30*c7'
 
+# 7.1 -> 5.1 downmix presets. This is a DIFFERENT problem from surround -> stereo above:
+# both the source (7.1) and the target (5.1) already keep a dedicated center and LFE
+# channel, so there's no need for a "dialogue focus" style boost - the only real question
+# is how much of each SIDE channel (SL/SR, present only in 7.1) gets folded into the
+# corresponding BACK channel (BL/BR, the ones 5.1 actually has). Channel order follows
+# FFmpeg's convention: 7.1 = FL FR FC LFE BL BR SL SR.
+DOWNMIX_71_TO_51_FORMULA_OPTIONS = [
+    {'value': 'automatic', 'label': '✨ Automatic - FFmpeg layout-aware downmix (libswresample)'},
+    {'value': 'blend',     'label': '🔀 Blend side channels into back channels - adjustable %'},
+    {'value': 'custom',    'label': '⚙️ Custom - edit the 7.1 → 5.1 pan formula'},
+]
+
+DEFAULT_71_TO_51_BLEND_PCT = 50
+DEFAULT_71_TO_51_PAN_FORMULA = 'pan=5.1|FL=FL|FR=FR|FC=FC|LFE=LFE|BL=0.5*BL+0.5*SL|BR=0.5*BR+0.5*SR'
+
 CODEC_SETTING_OUTPUT_MAP = {
     'aac':  'aac',
     'opus': 'libopus',
@@ -162,6 +179,21 @@ CODEC_SETTING_OUTPUT_CHOICE = [
   {
     'value': "mp3",
     'label': "🎧 {}: Why would you ever use that...".format('MP3'.translate(BOLD_MAP)),
+  },
+]
+
+# 5.1 output is restricted to AC3/EAC3 only - these are the two surround codecs with
+# genuinely universal container/device support (including MP4/Roku direct-play, the
+# reason this restriction exists at all). AAC 5.1, Opus 5.1 and MP3 5.1 all exist
+# technically, but device/container support for them is far less reliable.
+CODEC_SETTING_OUTPUT_SURROUND_CHOICE = [
+  {
+    'value': "ac3",
+    'label': "💿 {}: Maximum compatibility for 5.1 (DVD/Blu-ray/Roku-safe)".format('AC3 (Dolby Digital)'.translate(BOLD_MAP)),
+  },
+  {
+    'value': "eac3",
+    'label': "✨ {}: Better quality per bit, slightly less universal than AC3".format('EAC3 (Dolby Digital+)'.translate(BOLD_MAP)),
   },
 ]
 
@@ -205,6 +237,27 @@ def is_container_compatible(container_ext: str, output_codec: str):
     if compatible_codecs is None:
         return False
     return output_codec in compatible_codecs
+
+
+def get_relevant_output_codecs(settings):
+    """
+    Which output codec(s) can actually be used for this file, given the selected
+    channel target. 'surround51' only ever produces 5.1 output; 'max51' can produce
+    either depending on what streams the file actually has, so both are checked
+    conservatively; everything else only ever produces stereo/mono output.
+
+    :param settings:
+    :return: list of codec strings
+    """
+    target_channels = str(settings.get_setting('target_channels') or 'le2').lower()
+    stereo_codec = settings.get_setting('output_codec') or CODEC_SETTING_OUTPUT_DEFAULT
+    surround_codec = settings.get_setting('output_codec_surround') or 'ac3'
+
+    if target_channels == 'surround51':
+        return [surround_codec]
+    if target_channels == 'max51':
+        return [stereo_codec, surround_codec]
+    return [stereo_codec]
 
 
 def stream_language_is_missing(stream_info: dict):
@@ -277,9 +330,14 @@ class Settings(PluginSettings):
         "downmix_lfe_db":         DEFAULT_DOWNMIX_LFE_DB,
         "downmix_51_formula":     DEFAULT_51_PAN_FORMULA,
         "downmix_71_formula":     DEFAULT_71_PAN_FORMULA,
+        "downmix_71_to_51_formula":       "automatic",
+        "downmix_71_to_51_blend_pct":     DEFAULT_71_TO_51_BLEND_PCT,
+        "downmix_71_to_51_custom_formula": DEFAULT_71_TO_51_PAN_FORMULA,
         "output_codec":           "aac",
         "encode_ratecontrol_method": "VBR",
         "base_bitrate_per_channel": 64,
+        "output_codec_surround":  "ac3",
+        "base_bitrate_per_channel_surround": 64,
         "auto_reduce_bitrate":    True,
         "fail_on_incompatible_container": True,
         "assign_default_language": True,
@@ -332,8 +390,12 @@ class Settings(PluginSettings):
                                             "Downmix LFE/subwoofer level (dB)",
                                             DEFAULT_DOWNMIX_LFE_DB,
                                             "Automatic mode only. Use -32 dB to effectively omit LFE from the stereo mix."),
+            "downmix_71_to_51_formula": self.__set_downmix_71_to_51_formula_form_settings(),
+            "downmix_71_to_51_blend_pct": self.__set_downmix_71_to_51_blend_pct_form_settings(),
+            "downmix_71_to_51_custom_formula": self.__set_downmix_71_to_51_custom_formula_form_settings(),
             "output_codec":             self.__set_output_codec_form_settings(),
             "encode_ratecontrol_method": self.__set_encode_ratecontrol_method_form_settings(current_codec),
+            "output_codec_surround":    self.__set_output_codec_surround_form_settings(),
         })
         
         # Add collapse option to force transcode anything to AAC including original AAC tracks
@@ -347,6 +409,7 @@ class Settings(PluginSettings):
 
         self.form_settings.update({
             "base_bitrate_per_channel": self.__set_base_bitrate_per_channel_form_settings(current_codec),
+            "base_bitrate_per_channel_surround": self.__set_base_bitrate_per_channel_surround_form_settings(),
             "auto_reduce_bitrate":      self.__set_auto_reduce_bitrate_form_settings(),
             "fail_on_incompatible_container": self.__set_fail_on_incompatible_container_form_settings(current_codec),
             "assign_default_language":  self.__set_assign_default_language_form_settings(),
@@ -373,7 +436,7 @@ class Settings(PluginSettings):
 
     def __set_target_channels_form_settings(self):
         values = {
-            "label":          "Target source channels",
+            "label":          "Limit source channels to:",
             "input_type":     "select",
             "select_options": CHANNEL_TARGET_OPTIONS,
             "description":    (
@@ -428,12 +491,77 @@ class Settings(PluginSettings):
             values["display"] = 'hidden'
         return values
 
+    def __set_downmix_71_to_51_formula_form_settings(self):
+        values = {
+            "label":          "7.1 → 5.1 downmix formula",
+            "input_type":     "select",
+            "sub_setting":    True,
+            "select_options": DOWNMIX_71_TO_51_FORMULA_OPTIONS,
+            "description":    (
+                "Only applies to 7.1 sources being reduced to 5.1 - a 5.1 source is never "
+                "touched by this. Unlike the surround-to-stereo case above, there's no need "
+                "to boost dialogue here since 5.1 keeps its own dedicated center channel; "
+                "the only real question is how much of each side channel (only present in "
+                "7.1) gets folded into the corresponding back channel."
+            ),
+        }
+        if self.get_setting('target_channels') not in ['surround51', 'max51']:
+            values["display"] = 'hidden'
+        return values
+
+    def __set_downmix_71_to_51_blend_pct_form_settings(self):
+        values = {
+            "label":          "Side → back channel blend (%)",
+            "input_type":     "slider",
+            "sub_setting":    True,
+            "slider_options": {
+                "min":  0,
+                "max":  100,
+                "step": 5,
+            },
+            "description": (
+                "'Blend' mode only. 0% keeps the back channels untouched (drops the side "
+                "channels entirely); 100% replaces each back channel with its side channel; "
+                "50% (default) mixes them evenly."
+            ),
+        }
+        if self.get_setting('target_channels') not in ['surround51', 'max51'] or self.get_setting('downmix_71_to_51_formula') != 'blend':
+            values["display"] = 'hidden'
+        return values
+
+    def __set_downmix_71_to_51_custom_formula_form_settings(self):
+        values = {
+            "label":       "Custom 7.1 → 5.1 downmix formula",
+            "input_type":  "textarea",
+            "sub_setting": True,
+            "description": "Used for 7.1 sources when Custom is selected. Expected to be a complete FFmpeg pan=5.1 filter.",
+        }
+        if self.get_setting('target_channels') not in ['surround51', 'max51'] or self.get_setting('downmix_71_to_51_formula') != 'custom':
+            values["display"] = 'hidden'
+        return values
+
     def __set_output_codec_form_settings(self):
         values = {
-            "label":          "Output codec",
+            "label":          "Stereo/mono output codec",
             "input_type":     "select",
             "select_options": CODEC_SETTING_OUTPUT_CHOICE,
+            "description":    "Used for any stream that ends up mono or stereo. Not shown when the "
+                              "channel target is '5.1/7.1 → 5.1' (that mode never produces stereo output).",
         }
+        if self.get_setting('target_channels') == 'surround51':
+            values["display"] = 'hidden'
+        return values
+
+    def __set_output_codec_surround_form_settings(self):
+        values = {
+            "label":          "5.1 output codec",
+            "input_type":     "select",
+            "select_options": CODEC_SETTING_OUTPUT_SURROUND_CHOICE,
+            "description":    "Used for any stream that ends up 5.1 (native 5.1 sources, and 7.1 sources "
+                              "downmixed to 5.1). Restricted to AC3/EAC3 for maximum device/container compatibility.",
+        }
+        if self.get_setting('target_channels') not in ['surround51', 'max51']:
+            values["display"] = 'hidden'
         return values
 
     def __set_encode_ratecontrol_method_form_settings(self, current_codec):
@@ -522,6 +650,35 @@ class Settings(PluginSettings):
             
         return values
 
+    def __set_base_bitrate_per_channel_surround_form_settings(self):
+        current_codec = str(self.get_setting('output_codec_surround') or 'ac3').lower()
+
+        # Same two ranges as the stereo slider uses for these codecs - kept in sync
+        # deliberately rather than introducing a third set of numbers to maintain.
+        if current_codec == "eac3":
+            default_min, default_max, step = 32, 170, 16
+        else:  # ac3
+            default_min, default_max, step = 64, 106, 16
+
+        values = {
+            "label":          "{} bitrate per channel (kBit/s)".format(current_codec.upper().translate(BOLD_MAP)),
+            "input_type":     "slider",
+            "sub_setting":    True,
+            "slider_options": {
+                "min":  default_min,
+                "max":  default_max,
+                "step": step,
+            },
+            "description": "Same per-channel convention as the stereo/mono slider above - the actual "
+                           "5.1 stream gets this value × 6 channels (e.g. the default 64k/channel gives "
+                           "384k total, the conventional AC3 5.1 rate).",
+        }
+
+        if self.get_setting('target_channels') not in ['surround51', 'max51'] or self.get_setting('advanced'):
+            values["display"] = 'hidden'
+
+        return values
+
     def __set_auto_reduce_bitrate_form_settings(self):
         values = {
             "label":      "Automatically reduce target bitrate to match the source",
@@ -532,8 +689,10 @@ class Settings(PluginSettings):
         return values
 
     def __set_fail_on_incompatible_container_form_settings(self, current_codec):
+        relevant_codecs = get_relevant_output_codecs(self)
+        codec_label = '/'.join(c.upper() for c in relevant_codecs).translate(BOLD_MAP)
         values = {
-            "label":      "Fail the worker if the target container is incompatible with {}".format(current_codec.upper().translate(BOLD_MAP)),
+            "label":      "Fail the worker if the target container is incompatible with {}".format(codec_label),
             "description":"If unchecked, the file is left untouched and worker will PASS but no encoding will happen.",
         }
         return values
@@ -722,25 +881,131 @@ class PluginStreamMapper(StreamMapper):
                 '-max_muxing_queue_size': str(self.settings.get_setting('max_muxing_queue_size')),
             })
 
-    def calculate_bitrate(self, stream_info: dict):
-        output_codec = self.settings.get_setting('output_codec') or CODEC_SETTING_OUTPUT_DEFAULT
-        source_channels = stream_info.get('channels', 2)
-        try:
-            source_channels = int(source_channels)
-        except (TypeError, ValueError):
-            source_channels = 2
+    def resolve_stream_target(self, source_channels: int):
+        """
+        Given a source stream's channel count, work out what this plugin will actually do
+        with it: how many channels the encoded output will have, what (if any) downmix
+        filter needs to run first, and which output codec/encoder applies.
 
-        # Surround targets are downmixed to stereo, so bitrate is based on the
-        # actual encoded output channel count rather than the source's 5.1/7.1
-        # channel count.
+        This exists as its own step - rather than being decided once per file, the way
+        self.codec/self.encoder are set in set_default_values() - because "max51" mode can
+        require DIFFERENT codecs for different streams in the SAME file (e.g. a stereo
+        stream goes to the stereo output codec, while a 5.1 stream in the same file goes to
+        the AC3/EAC3-only surround codec).
+
+        :param source_channels:
+        :return: (final_channels, downmix_af_args, output_codec, encoder)
+        """
         target_channels = str(self.settings.get_setting('target_channels') or 'le2').lower()
-        channels = 2 if target_channels in ['gt2', 'all'] else min(source_channels, 6)
+        stereo_codec = self.settings.get_setting('output_codec') or CODEC_SETTING_OUTPUT_DEFAULT
+        surround_codec = self.settings.get_setting('output_codec_surround') or 'ac3'
 
-        base_bitrate_per_channel = int(self.settings.get_setting('base_bitrate_per_channel'))
-        bitrate = int(channels) * base_bitrate_per_channel
+        if target_channels in ('gt2', 'all') and source_channels > 2:
+            # Downmix to stereo using whichever of the automatic/dialogue/custom
+            # 5.1|7.1 -> stereo formulas is configured.
+            final_channels = 2
+            downmix_af = self._build_downmix_to_stereo_af(source_channels)
+            output_codec = stereo_codec
+
+        elif target_channels in ('surround51', 'max51') and source_channels > 6:
+            # 7.1 (or any unusually large layout) -> 5.1.
+            final_channels = 6
+            downmix_af = self._build_downmix_71_to_51_af(source_channels)
+            output_codec = surround_codec
+
+        elif target_channels in ('surround51', 'max51') and source_channels > 2:
+            # Already 5.1 (or some other >2ch layout that isn't >6ch) - no downmix,
+            # but still routed to the surround-only codec.
+            final_channels = source_channels
+            downmix_af = None
+            output_codec = surround_codec
+
+        else:
+            # mono / stereo, passed through at their own channel count, OR the plain
+            # mono/stereo/le2 targets which never see anything else reach this point.
+            final_channels = source_channels
+            downmix_af = None
+            output_codec = stereo_codec
+
+        encoder = CODEC_SETTING_OUTPUT_MAP.get(output_codec, 'aac')
+        return final_channels, downmix_af, output_codec, encoder
+
+    def _build_downmix_to_stereo_af(self, source_channels: int):
+        """
+        Build the -af filter args for a >2ch -> stereo downmix, per the existing
+        automatic/dialogue/custom formula setting. Returns a list of ffmpeg args
+        (possibly empty if 'automatic' is selected and no explicit filter is needed
+        beyond what the encoder's own channel-layout negotiation already does).
+        """
+        downmix_formula = str(self.settings.get_setting('downmix_formula') or 'automatic').lower()
+        pan_formula = None
+
+        if downmix_formula == 'dialogue':
+            if source_channels == 8:
+                pan_formula = DEFAULT_71_PAN_FORMULA
+            elif source_channels == 6:
+                pan_formula = DEFAULT_51_PAN_FORMULA
+            else:
+                downmix_formula = 'automatic'
+        elif downmix_formula == 'custom':
+            if source_channels == 8:
+                pan_formula = str(self.settings.get_setting('downmix_71_formula') or DEFAULT_71_PAN_FORMULA).strip()
+            elif source_channels == 6:
+                pan_formula = str(self.settings.get_setting('downmix_51_formula') or DEFAULT_51_PAN_FORMULA).strip()
+            else:
+                downmix_formula = 'automatic'
+            if downmix_formula == 'custom' and not pan_formula:
+                pan_formula = DEFAULT_71_PAN_FORMULA if source_channels == 8 else DEFAULT_51_PAN_FORMULA
+
+        if downmix_formula in ('dialogue', 'custom'):
+            return [pan_formula]
+
+        # automatic
+        center_db = int(self.settings.get_setting('downmix_center_db') or DEFAULT_DOWNMIX_CENTER_DB)
+        surround_db = int(self.settings.get_setting('downmix_surround_db') or DEFAULT_DOWNMIX_SURROUND_DB)
+        lfe_db = int(self.settings.get_setting('downmix_lfe_db') or DEFAULT_DOWNMIX_LFE_DB)
+        return ['aresample=ochl=stereo:clev={}:slev={}:lfe_mix_level={}'.format(center_db, surround_db, lfe_db)]
+
+    def _build_downmix_71_to_51_af(self, source_channels: int):
+        """
+        Build the -af filter args for a 7.1 -> 5.1 downmix. For anything other than a
+        true 8-channel 7.1 layout, fall back to the generic libswresample downmix
+        regardless of the configured formula, the same way the stereo downmix falls
+        back to 'automatic' for uncommon layouts.
+        """
+        if source_channels != 8:
+            return ['aresample=ochl=5.1']
+
+        formula = str(self.settings.get_setting('downmix_71_to_51_formula') or 'automatic').lower()
+
+        if formula == 'custom':
+            pan_formula = str(
+                self.settings.get_setting('downmix_71_to_51_custom_formula') or DEFAULT_71_TO_51_PAN_FORMULA
+            ).strip()
+            return [pan_formula or DEFAULT_71_TO_51_PAN_FORMULA]
+
+        if formula == 'blend':
+            pct = int(self.settings.get_setting('downmix_71_to_51_blend_pct') or DEFAULT_71_TO_51_BLEND_PCT)
+            pct = max(0, min(100, pct))
+            side_ratio = pct / 100.0
+            back_ratio = 1.0 - side_ratio
+            return [
+                'pan=5.1|FL=FL|FR=FR|FC=FC|LFE=LFE|BL={:.2f}*BL+{:.2f}*SL|BR={:.2f}*BR+{:.2f}*SR'.format(
+                    back_ratio, side_ratio, back_ratio, side_ratio)
+            ]
+
+        # automatic
+        return ['aresample=ochl=5.1']
+
+    def calculate_bitrate(self, stream_info: dict, final_channels: int, output_codec: str):
+        base_bitrate_setting = (
+            'base_bitrate_per_channel_surround' if final_channels > 2 else 'base_bitrate_per_channel'
+        )
+        base_bitrate_per_channel = int(self.settings.get_setting(base_bitrate_setting))
+        bitrate = int(final_channels) * base_bitrate_per_channel
 
         if self.settings.get_setting('auto_reduce_bitrate'):
-            cap = self.get_source_equivalent_bitrate_cap(stream_info)
+            cap = self.get_source_equivalent_bitrate_cap(stream_info, output_codec)
             if cap and cap < bitrate:
                 logger.debug(
                     "Reducing {} bitrate from {}k to {}k - source codec/bitrate doesn't "
@@ -749,7 +1014,7 @@ class PluginStreamMapper(StreamMapper):
 
         return bitrate
 
-    def get_source_equivalent_bitrate_cap(self, stream_info: dict):
+    def get_source_equivalent_bitrate_cap(self, stream_info: dict, output_codec: str):
         """
         Estimate a ceiling for the output bitrate based on the source stream's own bitrate,
         so a low-bitrate lossy source isn't needlessly re-encoded at a much higher bitrate
@@ -757,13 +1022,14 @@ class PluginStreamMapper(StreamMapper):
         (missing source bitrate, a lossless source codec, or an unrecognised codec).
 
         AAC_EQUIVALENT_BITRATE_FACTORS is calibrated relative to AAC-LC (see the comment
-        above it). If the selected output format is instead Opus, the same source-codec
-        factor is re-based against Opus's own AAC-equivalent factor, so e.g. a Vorbis
-        source is still compared correctly whether the target is AAC or Opus. This stacks
-        two separate heuristics on top of each other, so treat the result as a rough
-        ballpark rather than a precise figure.
+        above it). `output_codec` re-bases the same source-codec factor against whichever
+        codec this particular stream is actually being encoded to (stereo/mono codec or
+        the AC3/EAC3-only surround codec), so e.g. a DTS 5.1 source is compared correctly
+        against an AC3 5.1 target. This stacks two separate heuristics on top of each
+        other, so treat the result as a rough ballpark rather than a precise figure.
 
         :param stream_info:
+        :param output_codec:
         :return:
         """
         codec_name = (stream_info.get('codec_name') or '').lower()
@@ -788,7 +1054,6 @@ class PluginStreamMapper(StreamMapper):
         if not source_factor:
             return None
 
-        output_codec = self.settings.get_setting('output_codec') or 'aac'
         output_baseline_factor = AAC_EQUIVALENT_BITRATE_FACTORS.get(output_codec, 1.0)
         factor = source_factor / output_baseline_factor
 
@@ -822,10 +1087,15 @@ class PluginStreamMapper(StreamMapper):
     def test_stream_needs_processing(self, stream_info: dict):
         """
         Only flag a stream for processing if it matches the selected channel target:
-          - mono   -> exactly 1 channel
-          - stereo -> exactly 2 channels
-          - <=2    -> 1 or 2 channels (default/original behaviour)
-          - >2     -> more than 2 channels; these are downmixed to stereo
+          - mono       -> exactly 1 channel
+          - stereo     -> exactly 2 channels
+          - le2        -> 1 or 2 channels (default/original behaviour)
+          - gt2        -> more than 2 channels; these are downmixed to stereo
+          - all        -> everything; anything >2ch is downmixed to stereo
+          - surround51 -> more than 2 channels only; 7.1 is downmixed to 5.1, 5.1 (or
+                          any other >2ch layout) is left at its own channel count
+          - max51      -> everything; 7.1 is downmixed to 5.1, mono/stereo/5.1 pass
+                          through at their own channel count
 
         The selected channel target is independent of the codec conversion checkbox.
         Force mode still overrides the codec checkbox, but not the channel target.
@@ -851,6 +1121,10 @@ class PluginStreamMapper(StreamMapper):
         elif target_channels == 'gt2':
             channel_match = channels > 2
         elif target_channels == 'all':
+            channel_match = True
+        elif target_channels == 'surround51':
+            channel_match = channels > 2
+        elif target_channels == 'max51':
             channel_match = True
         else:  # <=2.0, the historical/default behaviour
             channel_match = channels <= 2
@@ -881,72 +1155,26 @@ class PluginStreamMapper(StreamMapper):
         return True
 
     def custom_stream_mapping(self, stream_info: dict, stream_id: int):
-        stream_encoding = ['-c:a:{}'.format(stream_id), self.encoder]
         if self.settings.get_setting('advanced'):
+            # Advanced mode is a raw per-file override (self.encoder/self.codec from the
+            # stereo/mono output codec setting) - it doesn't attempt the dual-codec
+            # (stereo vs 5.1) resolution used below, since that's a single hand-written
+            # options string.
+            stream_encoding = ['-c:a:{}'.format(stream_id), self.encoder]
             stream_encoding += self.settings.get_setting('custom_options').split()
         else:
+            stream_encoding = []
             # Automatically detect bitrate for this stream.
             if stream_info.get('channels'):
-                calculated_bitrate = self.calculate_bitrate(stream_info)
                 source_channels = int(stream_info.get('channels'))
-                if int(source_channels) > 6:
-                    source_channels = 6
 
-                target_channels = str(
-                    self.settings.get_setting('target_channels') or 'le2'
-                ).lower()
+                final_channels, downmix_af, output_codec, encoder = self.resolve_stream_target(source_channels)
+                stream_encoding += ['-c:a:{}'.format(stream_id), encoder]
 
-                # For the >2.0 target, downmix to stereo. Automatic mode uses
-                # FFmpeg/libswresample's channel-layout-aware matrix. The dialogue
-                # and custom modes use explicit pan formulas, with separate formulas
-                # for 5.1 and 7.1 because those layouts have different channel counts.
-                if target_channels in ['gt2', 'all']:
-                    downmix_formula = str(
-                        self.settings.get_setting('downmix_formula') or 'automatic'
-                    ).lower()
+                calculated_bitrate = self.calculate_bitrate(stream_info, final_channels, output_codec)
 
-                    if downmix_formula == 'dialogue':
-                        if source_channels == 8:
-                            pan_formula = DEFAULT_71_PAN_FORMULA
-                        elif source_channels == 6:
-                            pan_formula = DEFAULT_51_PAN_FORMULA
-                        else:
-                            # The preset formulas are specifically for 5.1/7.1.
-                            # Let libswresample handle uncommon layouts safely.
-                            downmix_formula = 'automatic'
-                    elif downmix_formula == 'custom':
-                        if source_channels == 8:
-                            pan_formula = str(
-                                self.settings.get_setting('downmix_71_formula') or DEFAULT_71_PAN_FORMULA
-                            ).strip()
-                        elif source_channels == 6:
-                            pan_formula = str(
-                                self.settings.get_setting('downmix_51_formula') or DEFAULT_51_PAN_FORMULA
-                            ).strip()
-                        else:
-                            # Custom fields are intentionally limited to the two common
-                            # movie layouts; don't apply a 5.1/7.1 matrix to another layout.
-                            downmix_formula = 'automatic'
-                        if downmix_formula == 'custom' and not pan_formula:
-                            pan_formula = DEFAULT_71_PAN_FORMULA if source_channels == 8 else DEFAULT_51_PAN_FORMULA
-
-                    if downmix_formula in ('dialogue', 'custom'):
-                        stream_encoding += [
-                            '-af:a:{}'.format(stream_id),
-                            pan_formula,
-                        ]
-                    if downmix_formula == 'automatic':
-                        center_db = int(self.settings.get_setting('downmix_center_db') or DEFAULT_DOWNMIX_CENTER_DB)
-                        surround_db = int(self.settings.get_setting('downmix_surround_db') or DEFAULT_DOWNMIX_SURROUND_DB)
-                        lfe_db = int(self.settings.get_setting('downmix_lfe_db') or DEFAULT_DOWNMIX_LFE_DB)
-                        stream_encoding += [
-                            '-af:a:{}'.format(stream_id),
-                            'aresample=ochl=stereo:clev={}:slev={}:lfe_mix_level={}'.format(
-                                center_db, surround_db, lfe_db)
-                        ]
-                    encoded_channels = 2
-                else:
-                    encoded_channels = source_channels
+                if downmix_af:
+                    stream_encoding += ['-af:a:{}'.format(stream_id), ','.join(downmix_af)]
 
                 ratecontrol = str(
                     self.settings.get_setting('encode_ratecontrol_method') or 'CBR'
@@ -955,7 +1183,9 @@ class PluginStreamMapper(StreamMapper):
                 # Opus/libopus exposes the exact VBR/CVBR/CBR controls used by
                 # Unmanic's audio_transcoder plugin: -vbr on/constrained/off.
                 # Keep the bitrate as the target/average bitrate in all three modes.
-                if self.codec == 'opus':
+                # (Opus is never a valid surround codec choice, so this only ever
+                # applies when output_codec is the stereo/mono selection.)
+                if output_codec == 'opus':
                     if ratecontrol == 'CBR':
                         stream_encoding += ['-vbr', 'off']
                     elif ratecontrol == 'CVBR':
@@ -970,23 +1200,24 @@ class PluginStreamMapper(StreamMapper):
                 # constrained VBR. Keep the existing bitrate behaviour for CBR;
                 # for VBR use a sensible native AAC quality level. The bitrate
                 # slider remains the CBR target and source-bitrate cap.
-                elif self.codec == 'aac' and ratecontrol == 'VBR':
+                elif output_codec == 'aac' and ratecontrol == 'VBR':
                     stream_encoding += ['-vbr:a:{}'.format(stream_id), '3']
 
                 # libmp3lame uses -q:a for VBR and -b:a for CBR. Quality 2 is
                 # approximately the conventional high-quality VBR setting.
-                elif self.codec == 'mp3' and ratecontrol == 'VBR':
+                elif output_codec == 'mp3' and ratecontrol == 'VBR':
                     stream_encoding += ['-q:a:{}'.format(stream_id), '2']
 
                 else:
-                    # AC3/EAC3 are CBR here, and this is also the fallback
-                    # for any encoder without a dedicated VBR implementation.
+                    # AC3/EAC3 are CBR here (the only surround codecs, and always CBR),
+                    # and this is also the fallback for any encoder without a
+                    # dedicated VBR implementation.
                     stream_encoding += [
                         '-b:a:{}'.format(stream_id), '{}k'.format(calculated_bitrate)
                     ]
 
                 stream_encoding += [
-                    '-ac:a:{}'.format(stream_id), '{}'.format(encoded_channels)
+                    '-ac:a:{}'.format(stream_id), '{}'.format(final_channels)
                 ]
 
         # Tag the stream with a default language/title if the source has none set (common
@@ -1042,15 +1273,18 @@ def on_library_management_file_test(data):
     if mapper.streams_need_processing():
         # Advisory check only: at file-test time we only know the SOURCE file's own
         # container - we can't guess if remux or video transcoding happens after
-        output_codec = settings.get_setting('output_codec') or CODEC_SETTING_OUTPUT_DEFAULT
         source_container_ext = get_file_extension(abspath)
-        if not is_container_compatible(source_container_ext, output_codec):
+        incompatible_codecs = [
+            codec for codec in get_relevant_output_codecs(settings)
+            if not is_container_compatible(source_container_ext, codec)
+        ]
+        if incompatible_codecs:
             message = (
                 "stereo_transcoder_ultra: source container '{}' does not support {} audio. "
                 "A container remux (MKV or MP4) needs to run BEFORE this plugin in the "
                 "processing flow, or this task will FAIL (unless you select to not fail) "
                 "in settings.".format(
-                    source_container_ext or '(none)', output_codec.upper())
+                    source_container_ext or '(none)', '/'.join(c.upper() for c in incompatible_codecs))
             )
             logger.warning(message)
             data.setdefault('issues', []).append({
@@ -1108,15 +1342,19 @@ def on_worker_process(data):
         # plugin in the worker flow (e.g. a remux/video transcoder) has already set it to.
         # This is the only point this plugin can know for certain what container ffmpeg
         # will actually mux into.
-        output_codec = settings.get_setting('output_codec') or CODEC_SETTING_OUTPUT_DEFAULT
         file_out = data.get('file_out') or abspath
         out_container_ext = get_file_extension(file_out)
 
-        if not is_container_compatible(out_container_ext, output_codec):
+        incompatible_codecs = [
+            codec for codec in get_relevant_output_codecs(settings)
+            if not is_container_compatible(out_container_ext, codec)
+        ]
+        if incompatible_codecs:
             message = (
                 "stereo_transcoder_ultra: cannot mux {} audio into a '{}' container ('{}'). "
                 "A container remux (e.g. to MKV or MP4) must run before this plugin in the "
-                "processing flow.".format(output_codec.upper(), out_container_ext or '(none)', file_out)
+                "processing flow.".format(
+                    '/'.join(c.upper() for c in incompatible_codecs), out_container_ext or '(none)', file_out)
             )
             if settings.get_setting('fail_on_incompatible_container'):
                 logger.error(message)
