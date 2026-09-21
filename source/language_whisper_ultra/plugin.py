@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
+    plugins.__init__.py
+
+    Forked from:              yajrendrag <yajdude@gmail.com>
     Written by:               AudioscavengeR <dev@derewonko.com>
     Date:                     16 September 2026
 
@@ -168,7 +171,7 @@ def get_audio_streams(probe_streams, force_rescan=False):
     return astreams
 
 
-def on_library_management_file_test(data):
+def on_library_management_file_test(data, task_data_store=None, file_metadata=None):
     """
     Runner function - enables additional actions during the library management file tests.
 

@@ -2,7 +2,7 @@
   "id": "stereo_transcoder_ultra",
   "name": "Stereo Transcoder Ultra",
   "author": "AudioscavengeR",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "tags": "audio,ffmpeg,encoder",
   "description": "Transcode audio streams in any codecs to any other codec, downmix stereo or keep 5.1. For MKV/MP4 containers only.",
   "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/stereo_transcoder_ultra/icon.webp",

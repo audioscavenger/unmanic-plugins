@@ -4,6 +4,7 @@
 """
     plugins.__init__.py
 
+    Forked from:              Josh.5 <jsunnex@gmail.com>
     Written by:               AudioscavengeR <audioscavenger@gmail.com>
     Date:                     17 Sep 2026
 

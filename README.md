@@ -105,7 +105,7 @@ git checkout main
 git fetch
 cp -rp backup/*.cmd ./
 git add .
-git commit -a -m "1.0.4"
+git commit -a -m "1.0.5"
 git push
 
 ------------- repo
@@ -116,7 +116,7 @@ git fetch
 cp -rp repo/*.* ./
 cp -rp repo/* ./
 git add .
-git commit -a -m "1.0.4"
+git commit -a -m "1.0.5"
 git push
 git checkout main
 

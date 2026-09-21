@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
+    plugins.__init__.py
+
+    Forked from:              Josh.5 <jsunnex@gmail.com>
     Written by:               AudioscavengeR <dev@derewonko.com>
     Date:                     16 September 2026
 
@@ -149,6 +152,12 @@ DOWNMIX_71_TO_51_FORMULA_OPTIONS = [
 ]
 
 DEFAULT_71_TO_51_BLEND_PCT = 50
+
+# EBU R128 loudness target for the optional single-pass volume normalization. -24 LUFS is
+# FFmpeg's own loudnorm filter default and the ATSC A/85 US broadcast TV target; true peak
+# and loudness-range are kept at loudnorm's own conventional single-pass defaults rather
+# than exposed as separate sliders, to keep this one simple checkbox+slider.
+DEFAULT_NORMALIZE_TARGET_LUFS = -24
 DEFAULT_71_TO_51_PAN_FORMULA = 'pan=5.1|FL=FL|FR=FR|FC=FC|LFE=LFE|BL=0.5*BL+0.5*SL|BR=0.5*BR+0.5*SR'
 
 CODEC_SETTING_OUTPUT_MAP = {
@@ -340,6 +349,8 @@ class Settings(PluginSettings):
         "base_bitrate_per_channel_surround": 64,
         "auto_reduce_bitrate":    True,
         "fail_on_incompatible_container": True,
+        "normalize_audio":        False,
+        "normalize_audio_target_lufs": DEFAULT_NORMALIZE_TARGET_LUFS,
         "assign_default_language": True,
         "default_stream_language": "eng",
         "default_stream_title":    "English",
@@ -412,6 +423,8 @@ class Settings(PluginSettings):
             "base_bitrate_per_channel_surround": self.__set_base_bitrate_per_channel_surround_form_settings(),
             "auto_reduce_bitrate":      self.__set_auto_reduce_bitrate_form_settings(),
             "fail_on_incompatible_container": self.__set_fail_on_incompatible_container_form_settings(current_codec),
+            "normalize_audio":          self.__set_normalize_audio_form_settings(),
+            "normalize_audio_target_lufs": self.__set_normalize_audio_target_lufs_form_settings(),
             "assign_default_language":  self.__set_assign_default_language_form_settings(),
             "default_stream_language":  self.__set_default_stream_language_form_settings(),
             "default_stream_title":     self.__set_default_stream_title_form_settings(),
@@ -695,6 +708,35 @@ class Settings(PluginSettings):
             "label":      "Fail the worker if the target container is incompatible with {}".format(codec_label),
             "description":"If unchecked, the file is left untouched and worker will PASS but no encoding will happen.",
         }
+        return values
+
+    def __set_normalize_audio_form_settings(self):
+        values = {
+            "label": "Normalise audio volume levels",
+            "description": "Applies FFmpeg's single-pass loudnorm filter (EBU R128) so quiet/loud "
+                           "sources end up at a consistent level. Single-pass is less precise than a "
+                           "measure-then-encode two-pass run, but doesn't double the processing time.",
+        }
+        if self.get_setting('advanced'):
+            values["display"] = 'hidden'
+        return values
+
+    def __set_normalize_audio_target_lufs_form_settings(self):
+        values = {
+            "label":          "Target loudness (LUFS)",
+            "input_type":     "slider",
+            "sub_setting":    True,
+            "slider_options": {
+                "min":  -30,
+                "max":  -10,
+                "step": 1,
+            },
+            "description": "-24 LUFS (default) matches FFmpeg's own loudnorm default and the ATSC A/85 "
+                           "US broadcast TV target. -23 LUFS is the EBU R128 European broadcast standard. "
+                           "-16 LUFS is closer to typical streaming-service loudness (louder).",
+        }
+        if not self.get_setting('normalize_audio') or self.get_setting('advanced'):
+            values["display"] = 'hidden'
         return values
 
     def __set_assign_default_language_form_settings(self):
@@ -1173,8 +1215,15 @@ class PluginStreamMapper(StreamMapper):
 
                 calculated_bitrate = self.calculate_bitrate(stream_info, final_channels, output_codec)
 
-                if downmix_af:
-                    stream_encoding += ['-af:a:{}'.format(stream_id), ','.join(downmix_af)]
+                # Combine every audio filter this stream needs (downmix, loudness
+                # normalisation, ...) into ONE chained -af argument - FFmpeg only honors
+                # the last -af:a:N given for a stream, it doesn't merge repeated ones.
+                af_filters = list(downmix_af) if downmix_af else []
+                if self.settings.get_setting('normalize_audio'):
+                    target_lufs = int(self.settings.get_setting('normalize_audio_target_lufs') or DEFAULT_NORMALIZE_TARGET_LUFS)
+                    af_filters.append('loudnorm=I={}:LRA=7:TP=-2'.format(target_lufs))
+                if af_filters:
+                    stream_encoding += ['-af:a:{}'.format(stream_id), ','.join(af_filters)]
 
                 ratecontrol = str(
                     self.settings.get_setting('encode_ratecontrol_method') or 'CBR'
@@ -1238,7 +1287,7 @@ class PluginStreamMapper(StreamMapper):
         }
 
 
-def on_library_management_file_test(data):
+def on_library_management_file_test(data, task_data_store=None, file_metadata=None):
     """
     Runner function - enables additional actions during the library management file tests.
 
