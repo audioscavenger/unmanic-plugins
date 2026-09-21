@@ -2,7 +2,7 @@
   "id": "codec_type_filter_ultra",
   "name": "Filter streams by codec_type",
   "author": "AudioscavengeR",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "tags": "ffmpeg,video,audio,subtitle,attachment,data,unknown",
   "description": "Filter streams by codec_type: video, audio, subtitle, attachment, data, unknown.",
   "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/codec_type_filter_ultra/icon.png",
