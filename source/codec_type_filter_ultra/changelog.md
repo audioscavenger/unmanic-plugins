@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.1</span>**
+- Improved description of why 'unknown' streams should be removed
+
 **<span style="color:#56adda">1.0.0</span>**
 - Reboot and rewritten to filter all known codec_type
 
