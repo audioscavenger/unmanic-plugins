@@ -110,10 +110,6 @@ class Settings(PluginSettings):
                         "label": "small: 73% accuracy, 470MB",
                     },
                     {
-                        "value": "medium",
-                        "label": "medium: 81% accuracy, 1.5GB",
-                    },
-                    {
                         "value": "large-v3-turbo",
                         "label": "turbo: 84% accuracy, 1.6GB FASTEST BESTEST",
                     },
@@ -324,7 +320,7 @@ def get_model(requested_model: str = 'small'):
     # -> base model will likely get English, Spanish, French, German, Japanese, or Mandarin 100% of the time
     # -> for exotic languages like Estonian, Swahili, Welsh, etc, use small or turbo. medium is garbage, turbo is 6x faster
     # -> unless your life depends on it, maybe the disk space they take will take you out of it?
-    model_hierarchy = ['large-v3-turbo', 'medium', 'small', 'base', 'tiny']
+    model_hierarchy = ['large-v3-turbo', 'small', 'base', 'tiny']
     
     # Clean user input and ensure it's a valid choice
     requested_model = requested_model.lower().strip()
