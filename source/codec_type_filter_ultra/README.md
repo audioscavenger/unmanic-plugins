@@ -1,3 +1,10 @@
-# Strip all image streams from file
+# Filter streams by codec_type
 
-plugin for [Unmanic](https://github.com/Unmanic)
+Plugin for [Unmanic](https://github.com/Unmanic)
+
+---
+
+### Information:
+
+- [Description](description.md)
+- [Changelog](changelog.md)
