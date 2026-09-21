@@ -140,6 +140,10 @@ for item in os.listdir(repo_source_path):
         print("    Compressing {}...".format(plugin_zip))
         zip_file = zipfile.ZipFile(plugin_zip, 'w', zipfile.ZIP_DEFLATED)
         for root, dirs, files in os.walk(item_path):
+            # Exclude __pycache__ folders from being walked into
+            if '__pycache__' in dirs:
+                dirs.remove('__pycache__')
+                
             for file in files:
                 absname = os.path.abspath(os.path.join(root, file))
                 arcname = absname[len(item_path) + 1:]
