@@ -33,12 +33,25 @@ from codec_type_filter_ultra.lib.ffmpeg import StreamMapper, Probe, Parser
 # Configure plugin logger
 logger = logging.getLogger("Unmanic.Plugin.codec_type_filter_ultra")
 
+# Image/graphic-based subtitle codecs: these are bitmap overlays burned into a picture
+# track, not text, so they can never be transcoded to another subtitle format and are
+# not supported inside an MP4 container at all - unlike text-based formats such as
+# SRT/ASS/SSA/mov_text, which stay untouched by this option.
+GRAPHIC_SUBTITLE_CODECS = {
+    'hdmv_pgs_subtitle',  # PGS, Blu-ray
+    'pgssub',             # alternate name some ffmpeg builds report for PGS
+    'dvd_subtitle',       # VobSub, DVD
+    'dvb_subtitle',       # DVB broadcast subtitles
+    'xsub',               # DivX/Xsub bitmap subtitles
+}
+
 
 class Settings(PluginSettings):
     settings = {
         "keep_video":     True,
         "keep_audio":     True,
         "keep_subtitle":  True,
+        "remove_graphic_subtitles": False,
         "keep_attachment": False,
         "keep_data":      False,
         "keep_unknown":   False,
@@ -51,6 +64,7 @@ class Settings(PluginSettings):
             "keep_video":     self.__set_keep_video_form_settings(),
             "keep_audio":     self.__set_keep_audio_form_settings(),
             "keep_subtitle":  self.__set_keep_subtitle_form_settings(),
+            "remove_graphic_subtitles": self.__set_remove_graphic_subtitles_form_settings(),
             "keep_attachment": self.__set_keep_attachment_form_settings(),
             "keep_data":      self.__set_keep_data_form_settings(),
             "keep_unknown":   self.__set_keep_unknown_form_settings(),
@@ -73,6 +87,18 @@ class Settings(PluginSettings):
             "label": "Keep subtitle",
             "description": "Keep subtitle streams",
         }
+
+    def __set_remove_graphic_subtitles_form_settings(self):
+        values = {
+            "label": "...but remove PGS/graphic subtitles",
+            "sub_setting": True,
+            "description": "PGS (Blu-ray), VobSub (DVD) and DVB subtitles are bitmap images, not text - they "
+                           "can't be transcoded to another subtitle format and MP4 doesn't support them at all. "
+                           "Text-based subtitles (SRT, ASS/SSA, mov_text, ...) are never affected by this option.",
+        }
+        if not self.get_setting('keep_subtitle'):
+            values["display"] = 'hidden'
+        return values
 
     def __set_keep_attachment_form_settings(self):
         return {
@@ -153,6 +179,7 @@ class PluginStreamMapper(StreamMapper):
     def test_stream_needs_processing(self, stream_info: dict):
         """Return True when a stream's codec type is not selected to be kept."""
         codec_type = (stream_info.get('codec_type') or '').lower()
+        codec_name = (stream_info.get('codec_name') or '').lower()
 
         keep_settings = {
             'video': 'keep_video',
@@ -169,7 +196,17 @@ class PluginStreamMapper(StreamMapper):
             # the known set: treat it as unknown.
             setting_name = 'keep_unknown'
 
-        return not self.settings.get_setting(setting_name)
+        keep_this_type = self.settings.get_setting(setting_name)
+
+        # Even when subtitles are being kept overall, PGS/VobSub/DVB ("graphic")
+        # subtitle streams can still be individually dropped, since they're bitmap
+        # images rather than text - see GRAPHIC_SUBTITLE_CODECS above.
+        if (codec_type == 'subtitle' and keep_this_type
+                and self.settings.get_setting('remove_graphic_subtitles')
+                and codec_name in GRAPHIC_SUBTITLE_CODECS):
+            return True  # this stream needs processing, i.e. should be removed
+
+        return not keep_this_type
 
 
     def custom_stream_mapping(self, stream_info: dict, stream_id: int):

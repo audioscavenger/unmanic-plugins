@@ -457,7 +457,7 @@ def detect_language(video_file, tmp_dir, settings):
 
     return []
 
-def on_worker_process(data):
+def on_worker_process(data, task_data_store=None, file_metadata=None):
     """
     Runner function - enables additional configured processing jobs during the worker stages of a task.
 

@@ -2,7 +2,7 @@
   "id": "subtitle_from_audio_ultra",
   "name": "Subtitles from Audio Ultra",
   "author": "AudioscavengeR",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "tags": "audio,lang",
   "description": "Listens and convert each audio stream to SRT subtitles, embedded or as separate files.",
   "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/subtitle_from_audio_ultra/icon.png",

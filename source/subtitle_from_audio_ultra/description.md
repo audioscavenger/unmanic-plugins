@@ -49,7 +49,7 @@ CPU fallback is automatic after a GPU load test of the model chosen. If the reas
 
 #### <span style="color:blue">model_name</span>
 
-'large-v3-turbo' model is the default and gives 84% accuracy for all languages, and 100% for Western languages.
+'small' model is the default and gives 73% accuracy for all languages, and 100% for Western languages.
 
 :::important
 Ensure that your container has 2.2GB of free space for `large-v3-turbo` (500MB + 1.6GB), otherwise refer to the model sizes above.
@@ -65,6 +65,14 @@ Jellyfin and Radarr require language code in the SRT file names to be 2-letters.
 #### <span style="color:blue">force_overwrite</span>
 
 Generate SRT even when they already exist.
+
+#### <span style="color:blue">multilingual</span>
+
+By default the whole audio stream is transcribed assuming a single detected language. 
+Enable this to detect the language independently for each spoken segment, so passages in a different language (e.g. a Japanese song in an English dub) are transcribed correctly too. 
+
+This runs language detection many more times and **noticeably increases processing time**.
+
 
 :::important
 This plugin is installed using the init.d system script, and whisper is installed by pip/venv as part of the the plugin installation **at boot time only**.

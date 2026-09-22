@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.2</span>**
+- Added _Remove graphic subtitles_ to the _Keep subtitles_ option. PGS/VobSub/DVB subtitles are incompatible with MP4.
+
 **<span style="color:#56adda">1.0.1</span>**
 - Improved description of why 'unknown' streams should be removed
 

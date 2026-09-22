@@ -1350,7 +1350,7 @@ def on_library_management_file_test(data, task_data_store=None, file_metadata=No
     return data
 
 
-def on_worker_process(data):
+def on_worker_process(data, task_data_store=None, file_metadata=None):
     """
     Runner function - enables additional configured processing jobs during the worker stages of a task.
 
