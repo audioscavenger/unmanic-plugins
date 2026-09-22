@@ -1,0 +1,20 @@
+{
+  "id": "subtitle_from_audio_ultra",
+  "name": "Subtitles from Audio Ultra",
+  "author": "AudioscavengeR",
+  "version": "1.0.1",
+  "tags": "audio,lang",
+  "description": "Listens and convert each audio stream to SRT subtitles, embedded or as separate files.",
+  "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/subtitle_from_audio_ultra/icon.png",
+  "compatibility": [
+    2
+  ],
+  "platform": [
+    "all"
+  ],
+  "priorities": {
+    "on_library_management_file_test": 51,
+    "on_worker_process": 3
+  },
+  "settings": []
+}

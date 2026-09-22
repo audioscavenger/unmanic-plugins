@@ -33,7 +33,7 @@
             "id": "codec_type_filter_ultra",
             "name": "Filter streams by codec_type",
             "author": "AudioscavengeR",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "tags": "ffmpeg,video,audio,subtitle,attachment,data,unknown",
             "description": "Filter streams by codec_type: video, audio, subtitle, attachment, data, unknown.",
             "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/codec_type_filter_ultra/icon.png",
@@ -73,7 +73,7 @@
             "id": "language_whisper_ultra",
             "name": "Language Whisper Ultra",
             "author": "AudioscavengeR",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "tags": "audio,lang",
             "description": "Detect missing language and tag streams with 3-letter codes",
             "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/language_whisper_ultra/icon.png",
@@ -86,6 +86,26 @@
             "priorities": {
                 "on_library_management_file_test": 50,
                 "on_worker_process": 2
+            },
+            "settings": []
+        },
+        {
+            "id": "subtitle_from_audio_ultra",
+            "name": "Subtitles from Audio Ultra",
+            "author": "AudioscavengeR",
+            "version": "1.0.1",
+            "tags": "audio,lang",
+            "description": "Listens and convert each audio stream to SRT subtitles, embedded or as separate files.",
+            "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/subtitle_from_audio_ultra/icon.png",
+            "compatibility": [
+                2
+            ],
+            "platform": [
+                "all"
+            ],
+            "priorities": {
+                "on_library_management_file_test": 51,
+                "on_worker_process": 3
             },
             "settings": []
         }

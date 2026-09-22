@@ -16,14 +16,14 @@ If you find a blatant bug or have a specific scenario, simply fix it yourself an
 
 #### Description:
 
-This plugin detects streams audio language and adds language tags with conditions: force rescan, ignore existing, etc. Original container or target container **MUST** be MKV/MP4/MOV.
+This plugin uses faster-whisper to listen and detect audio stream languages, then tas them with 3-letters.
 
 Elect and labels the stream with the most frequently observed language among 1 to 6 30-seconds audio samples.
 
-Absolut minimun duration of audio detection is 30 seconds. Plugin will ignore anything shorter than 30 seconds.
+Absolut minimun duration of a file is 30 seconds, anything shorter will be ignored.
 
 :::important
-You **must** restart Unmanic/reboot the container to get Whisper dependencies installed.
+You **must** restart Unmanic/reboot the container to get Whisper dependencies installed (unless you already use _subtitle_from_audio_ultra_).
 :::
 
 Uses **faster-whisper** Speech Recognition: eats up only 500MB (excluding models) versus 10GB for OpenAI's Whisper.
@@ -45,32 +45,40 @@ This plugin will detect languages and update the file but that won't do anything
 
 
 ##### <span style="color:blue">force_cpu</span>
-The plugin defaults to using GPU, but if this option is checked it will bypass the GPU test and use the CPU for detection. CPU fallback is done after a load test of the model chosen and re-test all the smaller models it, in that order:
+
+Force CPU processing when you know that you don't have a GPU.
+
+CPU fallback is automatic after a GPU load test of the model chosen. If the reason is Out of Memory, it will re-test all the smaller models in that order:
 
 - turbo: 84% accuracy, 1.6GB FASTEST BESTEST",
 - small: 73% accuracy, 470MB",
 - base: 55% accuracy, 142 MB",
 - tiny: 50% accuracy, 75 MB",
 
-'medium' is purposefully excluded as it's garbage compared to large-v3-turbo which is 6x faster, same size and same accuracy.
-
-The plugin is checking 6 randomly selected, 30 second audio samples, so this
-doesn't place a huge burden on the CPU and still executes very fast.  it should be selected if you do not have an nvidia GPU or if your GPU is low on memory.  There are known issues with Whisper not releasing
-GPU memory until the calling process (unmanic) terminates.  this will avoid this issue.
+'medium' is purposefully excluded as it's garbage compared to large-v3-turbo, which is 6x faster, same size and same accuracy.
 
 #### <span style="color:blue">model_name</span>
-'tiny' model is the default and gives 100% accuracy for 99.99% of Western movies. Only use a larger model when you have exotic languages to identify. I use `tiny` for my collection of FR/EN movies in conjusction with _Radarr_  and accuracy has been 100% for 376 movies.
+
+'large-v3-turbo' model is the default and gives 100% accuracy for 99.99% of Western movies. Only use a larger model when you have exotic languages to identify.
+
+:::important
+Ensure that your container has 2.2GB of free space for `large-v3-turbo` (500MB + 1.6GB), otherwise refer to the model sizes above.
+:::
 
 #### <span style="color:blue">force_rescan</span>
+
 Force reprocess all audio tracks
 
 #### <span style="color:blue">force_samples</span>
+
 Enable you to choose how many 30-seconds samples to randomely pull from the audio. 3 is sufficient for 99.99% of scenarios.
 
 #### <span style="color:blue">samples</span>
+
 Use only odd numbers: the logic is to elect a winner when multiple languages are detected.
 
 #### <span style="color:blue">tag_style</span>
+
 There is zero reason in 2026 to choose 2 characters for lang tag over 3. This option will be removed in future releases.
 
 Video files (like MKV and MP4) and media players (like Plex, Jellyfin, and VLC) strictly rely on a global broadcasting standard known as ISO 639-2 (or its modern successor, ISO 639-3).

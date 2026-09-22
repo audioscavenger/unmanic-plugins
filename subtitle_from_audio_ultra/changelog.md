@@ -1,7 +1,4 @@
 
-**<span style="color:#56adda">1.0.7</span>**
-- Removed medium size model
-
 **<span style="color:#56adda">1.0.6</span>**
 - Updated description to stress the need to restart Unmanic after install
 
