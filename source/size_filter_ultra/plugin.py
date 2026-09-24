@@ -28,7 +28,7 @@ import humanfriendly
 from unmanic.libs.unplugins.settings import PluginSettings
 
 # Configure plugin logger
-logger = logging.getLogger("Unmanic.Plugin.ignore_over_size")
+logger = logging.getLogger("Unmanic.Plugin.size_filter_ultra")
 
 
 class Settings(PluginSettings):
@@ -84,7 +84,7 @@ def check_file_size_under_min_file_size(path, min_file_size):
     return file_size < min_bytes
 
 
-def on_library_management_file_test(data):
+def on_library_management_file_test(data, task_data_store=None, file_metadata=None):
     """
     Runner function - enables additional actions during the library management file tests.
 
@@ -103,26 +103,28 @@ def on_library_management_file_test(data):
     else:
         settings = Settings()
 
-    path = data.get('path')
+    abspath = data.get('path')
     max_file_size = settings.get_setting('max_file_size')
     min_file_size = settings.get_setting('min_file_size')
 
-    if check_file_size_over_max_file_size(path, max_file_size):
+    if check_file_size_over_max_file_size(abspath, max_file_size):
         # Ignore this file - it's too large
+        message = "File '{}' will not be added to task list: size over {}.".format(abspath, max_file_size)
+        logger.info(message)
         data['add_file_to_pending_tasks'] = False
-        data['issues'].append({
-            'id':      'Ignore files by size on disk',
-            'message': "File '{}' should be ignored because it is over the configured maximum size '{}'.".format(
-                path, max_file_size),
+        data.setdefault('issues', []).append({
+            'message': message,
+            'abspath': abspath,
         })
 
-    if check_file_size_under_min_file_size(path, min_file_size):
+    if check_file_size_under_min_file_size(abspath, min_file_size):
         # Ignore this file - it's too small
+        message = "File '{}' will not be added to task list: size under {}.".format(abspath, min_file_size)
+        logger.info(message)
         data['add_file_to_pending_tasks'] = False
-        data['issues'].append({
-            'id':      'Ignore files by size on disk',
-            'message': "File '{}' should be ignored because it is under the configured minimum size '{}'.".format(
-                path, min_file_size),
+        data.setdefault('issues', []).append({
+            'message': message,
+            'abspath': abspath,
         })
 
     return data

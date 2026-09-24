@@ -1343,9 +1343,9 @@ def on_library_management_file_test(data, task_data_store=None, file_metadata=No
 
         # Mark this file to be added to the pending tasks
         data['add_file_to_pending_tasks'] = True
-        logger.debug("File '{}' should be added to task list. Probe found streams require processing.".format(abspath))
+        logger.info("File '{}' should be added to task list. Probe found streams require processing.".format(abspath))
     else:
-        logger.debug("File '{}' does not contain streams require processing.".format(abspath))
+        logger.info("File '{}' does not contain streams require processing.".format(abspath))
 
     return data
 
