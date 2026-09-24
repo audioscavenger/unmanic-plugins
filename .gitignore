@@ -34,7 +34,8 @@ commit.*.txt
 
 # Plugin site-packages
 /*_ultra/
-repo/
+**/repo
+**/scripts
 repo.json*
 source/**/site-packages/**
 **/__pycache__/**

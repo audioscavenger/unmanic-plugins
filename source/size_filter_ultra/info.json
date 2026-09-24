@@ -1,0 +1,21 @@
+{
+  "id": "size_filter_ultra",
+  "name": "Size Filter Ultra",
+  "author": "AudioscavengeR",
+  "version": "1.0.0",
+  "tags": "size",
+  "description": "Filter by size: over and under.",
+  "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/size_filter_ultra/icon.png",
+  "compatibility": [
+    1,
+    2
+  ],
+  "platform": [
+    "all"
+  ],
+  "priorities": {
+    "on_library_management_file_test": 2,
+    "on_worker_process": 1
+  },
+  "settings": []
+}
