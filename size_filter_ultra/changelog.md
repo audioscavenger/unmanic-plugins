@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.2</span>**
+- Added fanart
+
 **<span style="color:#56adda">1.0.1</span>**
 - Added logging
 

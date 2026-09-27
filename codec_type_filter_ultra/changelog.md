@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.3</span>**
+- Added fanart
+
 **<span style="color:#56adda">1.0.2</span>**
 - Added _Remove graphic subtitles_ to the _Keep subtitles_ option. PGS/VobSub/DVB subtitles are incompatible with MP4.
 
