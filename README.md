@@ -19,6 +19,7 @@
 https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/repo.json
 ```
 
+![paste repo here](docs/add_repo.webp)
 
 Follow the Unmanic Documentation for:
  - [Adding this repo to your Unmanic installation](http://docs.unmanic.app/docs/plugins/adding_a_custom_plugin_repo/)
@@ -75,9 +76,9 @@ By default, FFmpeg uses a small queue size (often 128 packets). Increasing it to
 
 
 ## TODO
-[x] where does gitmodules.txt come from and should I host it: comes from Unmanic official sources, can be ignored
-[x] how do I list my repo to Community Repositories: repository index file must be registered into Unmanic's central database tracker
-[x] registration process: https://docs.unmanic.app/docs/development/plugin_repos/creating_your_own_repo/
+- [x] where does gitmodules.txt come from and should I host it: comes from Unmanic official sources, can be ignored
+- [x] how do I list my repo to Community Repositories: repository index file must be registered into Unmanic's central database tracker
+- [x] registration process: https://docs.unmanic.app/docs/development/plugin_repos/creating_your_own_repo/
 
 
 <!-- 
