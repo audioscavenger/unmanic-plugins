@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.1.3</span>**
+- Added fanart
+
 **<span style="color:#56adda">1.1.2</span>**
 - Changed name of project to audio_transcoder_ultra since it does everything
 

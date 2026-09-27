@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.8</span>**
+- Added fanart
+
 **<span style="color:#56adda">1.0.7</span>**
 - Removed medium size model
 

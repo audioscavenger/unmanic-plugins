@@ -1,4 +1,7 @@
 
+**<span style="color:#56adda">1.0.7</span>**
+- added fanart
+
 **<span style="color:#56adda">1.0.6</span>**
 - Updated description to stress the need to restart Unmanic after install
 
