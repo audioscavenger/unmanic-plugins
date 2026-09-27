@@ -1,4 +1,4 @@
-# Language Whisper Ultra
+# <img src="icon.png" width="64"> Subtitle From Audio Ultra
 
 Plugin for [Unmanic](https://github.com/Unmanic)
 

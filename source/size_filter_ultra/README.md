@@ -1,4 +1,4 @@
-# Size Filter Ultra
+# <img src="icon.png" width="64"> Size Filter Ultra
 
 Plugin for [Unmanic](https://github.com/Unmanic)
 

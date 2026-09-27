@@ -1,4 +1,4 @@
-# Language Whisper Ultra
+# <img src="icon.png" width="64"> Language Whisper Ultra
 
 Plugin for [Unmanic](https://github.com/Unmanic)
 

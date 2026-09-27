@@ -1,4 +1,4 @@
-# Filter streams by codec_type
+# <img src="icon.png" width="64"> Filter streams by codec_type
 
 Plugin for [Unmanic](https://github.com/Unmanic)
 

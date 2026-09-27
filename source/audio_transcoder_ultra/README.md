@@ -1,4 +1,4 @@
-# Audio Transcoder Ultra
+# <img src="icon.png" width="64"> Audio Transcoder Ultra
 
 Plugin for [Unmanic](https://github.com/Unmanic)
 

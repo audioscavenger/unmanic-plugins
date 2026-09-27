@@ -1,4 +1,4 @@
-# Language Filter Ultra
+# <img src="icon.png" width="64"> Language Filter Ultra
 
 Plugin for [Unmanic](https://github.com/Unmanic)
 
