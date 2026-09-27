@@ -51,6 +51,8 @@ The plugin can auto-manages the bitrate for you if you don't want to over-shoot 
 
 ➡️ This plugin will FAIL if target container is not MKV/MP4/M4V ⬅️
 
+![Settings](https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/audio_transcoder_ultra/fanart.jpg)
+
 ##### Notes:
 
 What should be modified to achive the same rults, is *Transcode Audio* (`audio_transcoder`) by the same author. That would make one-of-a-kind audio transcoder that can handle anything. 

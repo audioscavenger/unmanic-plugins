@@ -28,6 +28,8 @@ This Plugin is intended for filtering out any of the 6 `codec_type` recognized b
 
 Data or attachment streams are not automatically selected and can only be included using -map. 
 
+![Settings](https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/codec_type_filter_ultra/fanart.jpg)
+
 ---
 
 ##### What is 'unknown'?

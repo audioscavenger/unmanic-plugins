@@ -18,6 +18,8 @@ If you find a blatant bug or have a specific scenario, simply fix it yourself an
 
 This Plugin filters input files by size: over or under your limits.
 
+![Settings](https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/size_filter_ultra/fanart.jpg)
+
 --- 
 
 ### Config description:

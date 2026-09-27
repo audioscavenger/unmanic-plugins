@@ -30,6 +30,8 @@ Uses **faster-whisper** Speech Recognition: eats up only 500MB (excluding models
 
 https://github.com/SYSTRAN/faster-whisper
 
+![Settings](https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/subtitle_from_audio_ultra/fanart.jpg)
+
 ---
 
 #### Configuration

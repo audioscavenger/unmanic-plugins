@@ -16,6 +16,8 @@ If you find a blatant bug or have a specific scenario, simply fix it yourself an
 
 #### Description:
 
+![Settings](https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/language_filter_ultra/fanart.jpg)
+
 ##### Configuration Options
 
 - Enter a comma delimited list of audio language codes and a comma delimited list of subtitle language codes to search for during library scans and new file event triggers - only streams matching these langauges are kept - all other streams are removed.
