@@ -1,5 +1,17 @@
 # AudioscavengeR Repo: Ultra Processors
 
+<img src="source/audio_transcoder_ultra/icon.png" width="32"> Audio Transcoder Ultra
+
+<img src="source/codec_type_filter_ultra/icon.png" width="32"> Filter streams by codec_type
+
+<img src="source/language_filter_ultra/icon.png" width="32"> Language Filter Ultra
+
+<img src="source/language_whisper_ultra/icon.png" width="32"> Language Whisper Ultra
+
+<img src="source/size_filter_ultra/icon.png" width="32"> Size Filter Ultra
+
+<img src="source/subtitle_from_audio_ultra/icon.png" width="32"> Subtitle From Audio Ultra
+
 ## Instructions
 
 ### Repo URL:

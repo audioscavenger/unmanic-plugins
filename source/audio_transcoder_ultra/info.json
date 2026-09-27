@@ -5,7 +5,7 @@
   "version": "1.1.3",
   "tags": "audio,ffmpeg,encoder",
   "description": "Transcode audio streams in any codecs to any other codec, downmix to stereo or 5.1, or cap multichannels to 5.1. For MKV/MP4 containers only.",
-  "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/audio_transcoder_ultra/icon.webp",
+  "icon": "https://raw.githubusercontent.com/audioscavenger/unmanic-plugins/repo/audio_transcoder_ultra/icon.png",
   "compatibility": [
     2
   ],
